@@ -1838,6 +1838,120 @@ body {
 
 
 /* ============================================================
+   10b. COMBAT TAB
+   ============================================================ */
+
+/* Party damage highlight — draws attention to penalty values */
+.val--partyDmg {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+/* Unresolved identity marker */
+.combat-unresolved {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--fs-badge);
+  font-weight: 700;
+  margin-left: 4px;
+  vertical-align: middle;
+  cursor: default;
+}
+
+/* Quest tags shown beneath a member's name */
+.combat-quests {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.combat-quest-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--color-brand-light);
+  color: var(--color-brand);
+  font-family: var(--font-condensed);
+  font-size: var(--fs-badge);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+
+/* ── Combat modal section label ── */
+.combat-modal-section-label {
+  font-family: var(--font-condensed);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  margin: 16px 0 8px;
+}
+
+/* ── Combat modal inline table (compact) ── */
+.combat-modal-table {
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+.combat-modal-table .data-table td {
+  padding: 8px 14px;
+  font-size: var(--fs-sub);
+}
+
+/* ── Chat history list ── */
+.combat-chat-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Every row: identical structure and padding — no shift between types */
+.combat-chat-msg {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+}
+.combat-chat-msg:last-child { border-bottom: none; }
+
+/* Background-only differentiation — no structural change */
+.combat-chat-msg--boss    { background: var(--color-surface-alt); }
+.combat-chat-msg--warrior { background: #fff0f1; }   /* Red 500 tonal  */
+.combat-chat-msg--healer  { background: #fffbf0; }   /* Yellow 500 tonal */
+.combat-chat-msg--mage    { background: #eef6fb; }   /* Blue 500 tonal */
+.combat-chat-msg--rogue   { background: var(--color-brand-light); }  /* Purple 600 tonal */
+
+.combat-chat-ts {
+  font-size: var(--fs-label);
+  color: var(--color-text-muted);   /* was text-ghost — now meets WCAG AA */
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.combat-chat-text {
+  flex: 1;
+  color: var(--color-text);
+}
+
+/* Danger weight inside chat text (party damage suffix) */
+.combat-chat-text .val--danger { font-weight: 600; }
+
+
+/* ============================================================
    11. FOOTER
    ============================================================ */
 
@@ -2177,6 +2291,7 @@ body {
       <button class="result-tab"           id="result-tab-scrolls">Scrolls</button>
       <button class="result-tab"           id="result-tab-eggs">Quest Eggs</button>
       <button class="result-tab"           id="result-tab-potions">Quest Potions</button>
+      <button class="result-tab"           id="result-tab-combat">Combat</button>
       <button class="result-tab"           id="result-tab-debug">Debug</button>
     </div>
 
@@ -2305,6 +2420,9 @@ body {
       </div>
     </div>
 
+    <!-- Panel: Combat -->
+    <div class="is-hidden" id="result-panel-combat"></div>
+
     <!-- Panel: Debug -->
     <div class="is-hidden" id="result-panel-debug">
       <div class="filter-row filter-row--panel">
@@ -2377,6 +2495,14 @@ body {
       </ul>
       <p class="welcome-body" style="margin-top:10px;"><strong>Scroll holders</strong> are party members who own at least one copy of the relevant quest scroll. The "Scroll owned" filter limits results to scrolls that at least one party member can actually run.</p>
       <p class="welcome-body" style="margin-top:10px;"><strong>Scrolls Needed</strong> in the Scrolls tab is <code>ceil(maxMemberShortfall / 3)</code> — the number of quest runs needed to satisfy the most-behind party member. <strong>Scrolls to Buy</strong> is the difference between that number and the party's current total copies of that scroll.</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card__label">Combat Performance</h2>
+      <p class="welcome-body">The Combat tab aggregates boss damage, party damage, and spell casts from the party chat history embedded in each snapshot. Habitica includes up to 400 chat messages per snapshot; loading multiple snapshots significantly extends coverage. The tool deduplicates messages across all uploaded files and skips intermediate snapshots whose oldest message falls within a range already covered by a more recent file — always processing the first and last snapshots to maximise reach.</p>
+      <p class="welcome-body" style="margin-top:10px;"><strong>Boss Dmg</strong> is the sum of damage that member dealt to the boss across all cron events visible in chat. <strong>Party Dmg</strong> is the total damage the boss dealt back to the party during that member's cron events — caused by missed or incomplete tasks. <strong>Crons</strong> is the number of cron events attributed to that member in the chat window.</p>
+      <p class="welcome-body" style="margin-top:10px;"><strong>Spell columns</strong> count party-wide cast events: Blessing (Healer heal-all), Ethereal Surge (Mage MP restore), Tools of the Trade (Rogue PER buff), and Other Buffs (Warrior Valorous Presence / Intimidating Gaze, Healer Protective Aura, Mage Earthquake). The cosmetic Shiny Seed spell is excluded.</p>
+      <p class="welcome-body" style="margin-top:10px;"><strong>Identity resolution:</strong> system messages carry only a display name, which can change over time. The tool cross-references display names against regular chat messages (which carry a stable user ID) and then against the members list to resolve display names to Habitica usernames where unambiguous. Members whose display name maps to more than one user ID, or whose user ID is not in the current members list, are listed with a <strong>?</strong> marker and kept as separate rows.</p>
     </div>
 
     <div class="card">
@@ -2454,6 +2580,33 @@ body {
         </table>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     COMBAT MODAL
+     ============================================================ -->
+<div class="modal-overlay is-hidden" id="combat-modal" role="dialog" aria-modal="true" aria-labelledby="combat-modal-name">
+  <div class="modal">
+
+    <div class="modal__header">
+      <div class="modal__identity">
+        <div class="modal__name" id="combat-modal-name"></div>
+        <div class="modal__meta" id="combat-modal-meta"></div>
+      </div>
+      <button class="modal__close" id="combat-modal-close" aria-label="Close">✕</button>
+    </div>
+
+    <nav class="modal__tabs" role="tablist">
+      <button class="modal__tab is-active" id="combat-modal-tab-summary" role="tab" aria-selected="true">Summary</button>
+      <button class="modal__tab"           id="combat-modal-tab-chat"    role="tab" aria-selected="false">Chat History</button>
+    </nav>
+
+    <div class="modal__body">
+      <div class="modal__panel is-active" id="combat-modal-panel-summary"></div>
+      <div class="modal__panel"           id="combat-modal-panel-chat"></div>
+    </div>
+
   </div>
 </div>
 
@@ -2574,6 +2727,7 @@ function sendToAnalyze() {
     memberMap,
     partyQuest: rawResults.party?.data?.quest || null,
     questName:  rawResults.questName || null,
+    chat:       rawResults.party?.data?.chat || [],
   };
 
   const wasEmpty = uploadedFiles.length === 0;
@@ -3056,6 +3210,8 @@ let lastSortedFiles  = null;   // full sorted file array — used by modal to fi
 let currentModalUsername = null;
 let lastScrollData   = null;   // { questKey: { total, playerCount, members: [...] } }
 let lastEggPotionData = null;  // { eggs: {animal:{…}}, potions: {color:{…}}, possible, totalMembers }
+let lastCombatData   = null;   // built by buildCombatData() — per-member combat stats from chat
+const combatSort     = { key: 'bossDmg', dir: -1 };
 let recMode = 'shortfall';     // 'shortfall' | 'coverage' | 'yield'
 let recActiveOnly = false;     // when true, hide rows with no scroll holders
 let recFilterUser = '';        // username to filter by scroll ownership; '' = no filter
@@ -3112,13 +3268,14 @@ function loadFile(file) {
         if (!members.length) throw new Error('No members found in this file');
         const partyQuest = data.party?.data?.quest || null;
         const questName  = data.questName || null;
+        const chat       = data.party?.data?.chat || [];
         // Build username → full member object map for per-member lookups
         const memberMap  = {};
         for (const m of members) {
           const u = m?.auth?.local?.username;
           if (u) memberMap[u] = m;
         }
-        resolve({ name: file.name, timestamp: parseTimestamp(file.name), members, memberMap, partyQuest, questName });
+        resolve({ name: file.name, timestamp: parseTimestamp(file.name), members, memberMap, partyQuest, questName, chat });
       } catch (err) {
         resolve({ name: file.name, timestamp: null, members: null, memberMap: {}, error: err.message });
       }
@@ -3238,6 +3395,7 @@ function clearAnalyzeResults() {
   hide($('result-panel-eggs'));
   hide($('result-panel-potions'));
   hide($('result-panel-debug'));
+  hide($('result-panel-combat'));
   $('analyze-thead').innerHTML  = '';
   $('analyze-tbody').innerHTML  = '';
   $('analyze-tfoot').innerHTML  = '';
@@ -3256,6 +3414,7 @@ function clearAnalyzeResults() {
   lastSortedFiles  = null;
   lastScrollData   = null;
   lastEggPotionData = null;
+  lastCombatData   = null;
   currentModalUsername = null;
 }
 
@@ -3324,6 +3483,8 @@ function generate() {
     renderDebugTable();
     populateRecUserDropdown();
     renderQuestRecommendations();
+    buildCombatData();
+    renderCombatTable();
 
     // Disable participation tab, default to Scrolls
     $('result-tab-participation').disabled = true;
@@ -3596,6 +3757,8 @@ function generate() {
   renderDebugTable();
   populateRecUserDropdown();
   renderQuestRecommendations();
+  buildCombatData();
+  renderCombatTable();
 
   // Show tab strip, default to Participation tab
   show($('result-tabs'));
@@ -3856,7 +4019,7 @@ function renderAnalyzeTable(rows, quests) {
 /* 5e. Result tab switching ---------------------------------- */
 
 function switchResultTab(name) {
-  ['participation', 'quests', 'scrolls', 'eggs', 'potions', 'debug'].forEach(t => {
+  ['participation', 'quests', 'scrolls', 'eggs', 'potions', 'combat', 'debug'].forEach(t => {
     $(`result-tab-${t}`).classList.toggle('is-active', t === name);
     $(`result-panel-${t}`).classList.toggle('is-hidden', t !== name);
   });
@@ -5248,12 +5411,12 @@ function findLatestMemberRecord(username) {
 
 /** Switch the active panel inside the member modal. */
 function switchModalTab(tabName) {
-  document.querySelectorAll('.modal__tab').forEach(btn => {
+  document.querySelectorAll('#member-modal .modal__tab').forEach(btn => {
     const active = btn.dataset.modalTab === tabName;
     btn.classList.toggle('is-active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
   });
-  document.querySelectorAll('.modal__panel').forEach(panel => {
+  document.querySelectorAll('#member-modal .modal__panel').forEach(panel => {
     panel.classList.toggle('is-active', panel.id === `modal-panel-${tabName}`);
   });
 }
@@ -5668,6 +5831,630 @@ function closeMemberModal() {
 
 
 /* ============================================================
+   7b. COMBAT TAB
+   Aggregates boss/party damage, spells, and crons from chat
+   history across all uploaded snapshots.
+   ============================================================ */
+
+/**
+ * Spells that contribute to combat/support and how to categorise them.
+ * 'blessing'   = healAll  (healer party heal)
+ * 'ethSurge'   = mpheal   (mage MP restore)
+ * 'tools'      = toolsOfTrade (rogue PER buff)
+ * 'otherBuffs' = valorousPresence, intimidate, protectAura, earth
+ * Excluded: shinySeed (cosmetic only)
+ */
+const COMBAT_SPELL_MAP = {
+  healAll:           'blessing',
+  mpheal:            'ethSurge',
+  toolsOfTrade:      'tools',
+  valorousPresence:  'otherBuffs',
+  intimidate:        'otherBuffs',
+  protectAura:       'otherBuffs',
+  earth:             'otherBuffs',
+};
+
+/** Maps spell key → CSS modifier class for chat row background tinting. */
+const SPELL_CLASS_MOD = {
+  healAll:          'healer',
+  protectAura:      'healer',
+  mpheal:           'mage',
+  earth:            'mage',
+  toolsOfTrade:     'rogue',
+  valorousPresence: 'warrior',
+  intimidate:       'warrior',
+};
+
+/**
+ * Build lastCombatData from chat arrays across all uploaded snapshots.
+ *
+ * Deduplication strategy:
+ *   - Messages are keyed by their unique `_id` field.
+ *   - We process snapshots newest → oldest (descending timestamp).
+ *   - Chat arrays are 400-message windows. Once we've established the
+ *     timestamp range covered by a file, any intermediate file whose
+ *     entire chat window falls within that range is skipped — it
+ *     contributes no messages not already seen. The first and last
+ *     (chronologically) files are always processed.
+ *
+ * Identity resolution:
+ *   - Regular (non-system) chat messages carry the sender's `uuid`
+ *     (actual user ID) and their display name at the time.
+ *   - We build a map: displayName → Set<uuid>  from these messages.
+ *   - We then cross-reference with the members list to get
+ *     uuid → username (stable Habitica handle).
+ *   - A display-name group is merged into one identity only if all
+ *     its messages share the same uuid (unambiguous 1:1).
+ *   - Groups with multiple uuids or no member-list match are kept
+ *     as separate entries under their display name.
+ */
+function buildCombatData() {
+  if (!lastSortedFiles?.length) return;
+
+  const files = lastSortedFiles; // already sorted oldest→newest by generate()
+
+  // ── 1. Choose which files to process ──────────────────────────────────
+  // Always include first and last; skip intermediate files whose chat window
+  // is entirely covered by already-processed windows.
+  const filesToProcess = [];
+  // Newest → oldest so we can track the earliest timestamp seen so far.
+  let earliestSeen = Infinity;
+
+  for (let i = files.length - 1; i >= 0; i--) {
+    const chat = files[i].chat || [];
+    if (!chat.length) {
+      if (i === 0 || i === files.length - 1) filesToProcess.push(files[i]);
+      continue;
+    }
+    const chatOldest = chat.reduce((min, m) => Math.min(min, m.timestamp || 0), Infinity);
+    const chatNewest = chat.reduce((max, m) => Math.max(max, m.timestamp || 0), 0);
+
+    const isFirst = i === 0;
+    const isLast  = i === files.length - 1;
+
+    // Skip only if this file's oldest message is already within our covered
+    // range — meaning all its messages exist in a more recent file we've
+    // already processed. chatNewest <= earliestSeen was wrong: it skipped
+    // files that extend history backward, which is exactly what we need.
+    if (!isFirst && !isLast && chatOldest >= earliestSeen) continue;
+
+    filesToProcess.push(files[i]);
+    earliestSeen = Math.min(earliestSeen, chatOldest);
+  }
+
+  // ── 2. Collect all unique messages ────────────────────────────────────
+  // filesToProcess is in newest→oldest order, but iteration order doesn't
+  // matter here — deduplication is keyed by message _id, not position.
+  const seen    = new Set();
+  const allMsgs = [];
+
+  for (const file of filesToProcess) {
+    for (const msg of (file.chat || [])) {
+      const id = msg._id || msg.id;
+      if (!id || seen.has(id)) continue;
+      seen.add(id);
+      allMsgs.push(msg);
+    }
+  }
+
+  // ── 3. Build uuid → username from all member records ─────────────────
+  const uuidToUsername = new Map(); // userId → stable @username
+  for (const file of files) {
+    for (const m of (file.members || [])) {
+      const uid = m._id || m.id;
+      const usr = m?.auth?.local?.username;
+      if (uid && usr) uuidToUsername.set(uid, usr);
+    }
+  }
+
+  // Also scan member modal data (latest file memberMap)
+  for (const [usr, m] of Object.entries(lastFile?.memberMap || {})) {
+    const uid = m._id || m.id;
+    if (uid) uuidToUsername.set(uid, usr);
+  }
+
+  // ── 3b. Build profileName → username fallback map ─────────────────────
+  // Used when a display name appears only in system messages (no regular chat
+  // to build a uuid chain from). Only resolves when exactly one member has
+  // that profile name — non-unique names stay unresolved.
+  const profileNameToUsernames = new Map(); // profileName → Set<username>
+  for (const file of files) {
+    for (const m of (file.members || [])) {
+      const usr  = m?.auth?.local?.username;
+      const name = m?.profile?.name;
+      if (!usr || !name) continue;
+      if (!profileNameToUsernames.has(name)) profileNameToUsernames.set(name, new Set());
+      profileNameToUsernames.get(name).add(usr);
+    }
+  }
+
+  // ── 4. Build displayName → uuid map from non-system chat ─────────────
+  // (system messages have uuid === 'system' and no real sender id)
+  const displayToUuids = new Map(); // displayName → Set<uuid>
+  for (const msg of allMsgs) {
+    if (msg.uuid === 'system') continue;
+    const uuid        = msg.uuid;
+    const displayName = msg.user || msg.username || uuid;
+    if (!uuid || !displayName) continue;
+    if (!displayToUuids.has(displayName)) displayToUuids.set(displayName, new Set());
+    displayToUuids.get(displayName).add(uuid);
+  }
+
+  // ── 5. Build canonical identity key per display name ─────────────────
+  // Priority 1: uuid chain — display name → single uuid → username.
+  // Priority 2: profile name match — display name matches exactly one
+  //             member's current profile.name (fallback for chat-silent members).
+  function resolveKey(displayName) {
+    // Priority 1: uuid chain
+    const uuids = displayToUuids.get(displayName);
+    if (uuids && uuids.size === 1) {
+      const uuid     = [...uuids][0];
+      const username = uuidToUsername.get(uuid);
+      if (username) return { key: username, isResolved: true, uuid };
+    }
+    // Priority 2: profile name exact match (unique only)
+    const byProfile = profileNameToUsernames.get(displayName);
+    if (byProfile && byProfile.size === 1) {
+      const username = [...byProfile][0];
+      return { key: username, isResolved: true, uuid: null };
+    }
+    return { key: displayName, isResolved: false, uuid: null };
+  }
+
+  // ── 6. Aggregate stats keyed by resolved identity ────────────────────
+  // Key: resolved key (username or display name)
+  const stats = new Map(); // key → stats object
+
+  function getStats(key, displayName, isResolved, uuid) {
+    if (!stats.has(key)) {
+      stats.set(key, {
+        key,
+        displayName,
+        isResolved,
+        uuid,
+        bossDmg:   0,
+        partyDmg:  0,
+        blessing:  0,
+        ethSurge:  0,
+        tools:     0,
+        otherBuffs:0,
+        crons:     0,     // removed from summary table but still used in modal detail panels
+        quests:    new Set(),
+        systemMsgs: [],  // boss_damage + spell_cast events for this identity
+        chatMsgs:   [],  // regular chat messages for this identity
+      });
+    }
+    return stats.get(key);
+  }
+
+  // ── 6a. Build uuid → resolved identity map for chat message attribution ─
+  // Store { key, isResolved, uuid } so the chat loop doesn't need to call
+  // resolveKey again.
+  const uuidToResolved = new Map();
+  for (const [displayName, uuids] of displayToUuids) {
+    const resolved = resolveKey(displayName);
+    for (const uuid of uuids) uuidToResolved.set(uuid, resolved);
+  }
+
+  // ── 6b. Collect regular chat messages per identity ────────────────────
+  for (const msg of allMsgs) {
+    if (msg.uuid === 'system') continue;
+    const resolved = uuidToResolved.get(msg.uuid);
+    if (!resolved) continue;
+    const s = getStats(resolved.key, resolved.key, resolved.isResolved, resolved.uuid);
+    s.chatMsgs.push(msg);
+  }
+
+  for (const msg of allMsgs) {
+    if (msg.uuid !== 'system') continue;
+    const info = msg.info || {};
+    const type = info.type;
+    if (!type) continue;
+
+    const displayName = info.user || '';
+
+    if (type === 'boss_damage') {
+      const { key, isResolved, uuid } = resolveKey(displayName);
+      const s = getStats(key, displayName, isResolved, uuid);
+      s.bossDmg  += parseFloat(info.userDamage || 0);
+      s.partyDmg += parseFloat(info.bossDamage || 0);
+      s.crons    += 1;
+      if (info.quest) s.quests.add(info.quest);
+      s.systemMsgs.push(msg);
+    } else if (type === 'spell_cast_party' || type === 'spell_cast_party_multi' || type === 'spell_cast_user') {
+      const spell  = info.spell || '';
+      const bucket = COMBAT_SPELL_MAP[spell];
+      if (!bucket) continue; // shinySeed or unmapped — skip
+      const { key, isResolved, uuid } = resolveKey(displayName);
+      const s = getStats(key, displayName, isResolved, uuid);
+      s[bucket] += (info.times || 1);
+      s.systemMsgs.push(msg);
+    }
+  }
+
+  // Freeze quests to sorted arrays for display; sort messages chronologically.
+  // For resolved identities, prefer the display name from the latest snapshot's
+  // memberMap — this avoids showing a stale name captured from an early message.
+  for (const s of stats.values()) {
+    s.quests = [...s.quests].sort();
+    s.systemMsgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    s.chatMsgs.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    if (s.isResolved) {
+      const member = lastFile?.memberMap?.[s.key];
+      if (member?.profile?.name) s.displayName = member.profile.name;
+    }
+  }
+
+  lastCombatData = {
+    rows:        [...stats.values()],
+    msgCount:    allMsgs.length,
+    filesUsed:   filesToProcess.length,
+    totalFiles:  files.length,
+  };
+}
+
+/** Render the combat performance table from lastCombatData. */
+function renderCombatTable() {
+  const panel = $('result-panel-combat');
+  if (!lastCombatData) { panel.innerHTML = ''; return; }
+
+  const { rows, msgCount, filesUsed, totalFiles } = lastCombatData;
+
+  if (!rows.length) {
+    panel.innerHTML = `<p class="info-bar">No boss or spell activity found in chat history across the loaded snapshots.</p>`;
+    return;
+  }
+
+  // Sort
+  const sorted = [...rows].sort((a, b) => {
+    const k = combatSort.key;
+    if (k === 'name') return combatSort.dir * a.displayName.localeCompare(b.displayName);
+    return combatSort.dir * ((b[k] || 0) - (a[k] || 0));
+  });
+
+  function makeHdr(label, key, extraClass = '') {
+    const th       = document.createElement('th');
+    const isActive = combatSort.key === key;
+    th.className   = [extraClass, isActive ? 'is-active' : ''].filter(Boolean).join(' ');
+    th.innerHTML   = `${esc(label)}<span class="sort-arrow" aria-hidden="true">${isActive ? (combatSort.dir === 1 ? '↑' : '↓') : '⇅'}</span>`;
+    th.addEventListener('click', () => {
+      combatSort.dir = combatSort.key === key ? combatSort.dir * -1 : -1;
+      combatSort.key = key;
+      renderCombatTable();
+    });
+    return th;
+  }
+
+  // Build thead
+  const thead = document.createElement('thead');
+  const hrow  = document.createElement('tr');
+  [
+    ['Member',          'name',       ''],
+    ['Boss Dmg',        'bossDmg',    'stat-cell'],
+    ['Party Dmg',       'partyDmg',   'stat-cell'],
+    ['Blessing',        'blessing',   'stat-cell is-centered'],
+    ['Eth. Surge',      'ethSurge',   'stat-cell is-centered'],
+    ['Tools of Trade',  'tools',      'stat-cell is-centered'],
+    ['Other Buffs',     'otherBuffs', 'stat-cell is-centered'],
+  ].forEach(([lbl, key, cls]) => hrow.appendChild(makeHdr(lbl, key, cls)));
+  thead.appendChild(hrow);
+
+  // Build tbody
+  const tbody = document.createElement('tbody');
+
+  function numTd(val, cls = 'stat-cell') {
+    const td = document.createElement('td');
+    td.className = cls;
+    if (val === 0) {
+      td.innerHTML = `<span class="val--zero">0</span>`;
+    } else {
+      td.textContent = typeof val === 'number' && !Number.isInteger(val)
+        ? val.toFixed(1)
+        : val;
+    }
+    return td;
+  }
+
+  for (const r of sorted) {
+    const tr = document.createElement('tr');
+
+    // Member cell — matches participation table pattern exactly
+    const nameTd = document.createElement('td');
+    nameTd.className = 'member-cell';
+    const nameBtn = document.createElement('button');
+    nameBtn.className   = 'member-link';
+    nameBtn.textContent = r.displayName;
+    nameBtn.addEventListener('click', () => openCombatModal(r.key));
+    nameTd.appendChild(nameBtn);
+    tr.appendChild(nameTd);
+
+    tr.appendChild(numTd(r.bossDmg,    'stat-cell'));
+    tr.appendChild(numTd(r.partyDmg,   r.partyDmg > 0 ? 'stat-cell val--partyDmg' : 'stat-cell'));
+    tr.appendChild(numTd(r.blessing,   'stat-cell is-centered'));
+    tr.appendChild(numTd(r.ethSurge,   'stat-cell is-centered'));
+    tr.appendChild(numTd(r.tools,      'stat-cell is-centered'));
+    tr.appendChild(numTd(r.otherBuffs, 'stat-cell is-centered'));
+
+    tbody.appendChild(tr);
+  }
+
+  // Build tfoot totals
+  const tfoot   = document.createElement('tfoot');
+  const footRow = document.createElement('tr');
+
+  const labelTd = document.createElement('td');
+  labelTd.className   = 'member-cell';
+  labelTd.textContent = 'TOTALS';
+  footRow.appendChild(labelTd);
+
+  function footTd(val, cls = 'stat-cell tfoot-total') {
+    const td = document.createElement('td');
+    td.className   = cls;
+    td.textContent = typeof val === 'number' && !Number.isInteger(val)
+      ? val.toFixed(1)
+      : val;
+    return td;
+  }
+
+  footRow.appendChild(footTd(rows.reduce((s, r) => s + r.bossDmg,    0)));
+  footRow.appendChild(footTd(rows.reduce((s, r) => s + r.partyDmg,   0)));
+  footRow.appendChild(footTd(rows.reduce((s, r) => s + r.blessing,   0), 'stat-cell tfoot-total is-centered'));
+  footRow.appendChild(footTd(rows.reduce((s, r) => s + r.ethSurge,   0), 'stat-cell tfoot-total is-centered'));
+  footRow.appendChild(footTd(rows.reduce((s, r) => s + r.tools,      0), 'stat-cell tfoot-total is-centered'));
+  footRow.appendChild(footTd(rows.reduce((s, r) => s + r.otherBuffs, 0), 'stat-cell tfoot-total is-centered'));
+
+  tfoot.appendChild(footRow);
+
+  // Assemble table
+  const table = document.createElement('table');
+  table.className = 'data-table';
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  table.appendChild(tfoot);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'data-table-wrap data-table-wrap--analyze';
+  wrap.appendChild(table);
+
+  // Coverage info bar
+  const coverageNote = filesUsed < totalFiles
+    ? ` (${filesUsed} of ${totalFiles} snapshots processed — intermediate files skipped where their chat window was already covered)`
+    : '';
+  const infoBar = document.createElement('div');
+  infoBar.className = 'info-bar';
+  infoBar.innerHTML = `<strong>${msgCount.toLocaleString()}</strong> unique chat messages analysed${coverageNote}. Coverage is limited to what was captured in each snapshot's 400-message chat window — events that fell outside every window cannot be recovered.`;
+
+  panel.innerHTML = '';
+  panel.appendChild(infoBar);
+  panel.appendChild(wrap);
+}
+
+
+/* ============================================================
+   7c. COMBAT MODAL
+   ============================================================ */
+
+const SPELL_LABELS = {
+  healAll:          'Blessing',
+  mpheal:           'Ethereal Surge',
+  toolsOfTrade:     'Tools of the Trade',
+  valorousPresence: 'Valorous Presence',
+  intimidate:       'Intimidating Gaze',
+  protectAura:      'Protective Aura',
+  earth:            'Earthquake',
+};
+
+function openCombatModal(key) {
+  const row = lastCombatData?.rows?.find(r => r.key === key);
+  if (!row) return;
+
+  // Header
+  const nameEl = $('combat-modal-name');
+  nameEl.textContent = row.displayName;
+  const metaEl = $('combat-modal-meta');
+  if (row.isResolved) {
+    metaEl.textContent = `@${row.key}`;
+  } else {
+    metaEl.textContent = 'Unresolved identity — display name only';
+  }
+
+  // Populate panels
+  $('combat-modal-panel-summary').innerHTML = buildCombatSummaryPanel(row);
+  $('combat-modal-panel-chat').innerHTML    = buildCombatChatPanel(row);
+
+  switchCombatModalTab('summary');
+  show($('combat-modal'));
+  document.body.style.overflow = 'hidden';
+  $('combat-modal-close').focus();
+}
+
+function closeCombatModal() {
+  hide($('combat-modal'));
+  document.body.style.overflow = '';
+}
+
+function switchCombatModalTab(name) {
+  ['summary', 'chat'].forEach(t => {
+    $(`combat-modal-tab-${t}`).classList.toggle('is-active', t === name);
+    $(`combat-modal-tab-${t}`).setAttribute('aria-selected', t === name ? 'true' : 'false');
+    $(`combat-modal-panel-${t}`).classList.toggle('is-active', t === name);
+  });
+}
+
+/** Format a unix-ms timestamp as a short local date+time string. */
+function formatMsgTimestamp(ts) {
+  if (!ts) return '';
+  return new Date(ts).toLocaleString(undefined, {
+    month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  });
+}
+
+/**
+ * Summary panel: per-quest breakdown + spell totals.
+ */
+function buildCombatSummaryPanel(row) {
+  const parts = [];
+
+  // ── Overall stat strip ───────────────────────────────────────────────
+  parts.push(`<div class="modal__summary-strip">
+    <span><span class="stat-label">Boss Dmg</span> ${row.bossDmg.toFixed(1)}</span>
+    <span><span class="stat-label">Party Dmg</span> <span class="${row.partyDmg > 0 ? 'val--danger' : ''}">${row.partyDmg.toFixed(1)}</span></span>
+    <span><span class="stat-label">Crons</span> ${row.crons}</span>
+    <span><span class="stat-label">Blessing</span> ${row.blessing}</span>
+    <span><span class="stat-label">Eth. Surge</span> ${row.ethSurge}</span>
+    <span><span class="stat-label">Tools</span> ${row.tools}</span>
+    <span><span class="stat-label">Other Buffs</span> ${row.otherBuffs}</span>
+  </div>`);
+
+  // ── Per-quest breakdown ───────────────────────────────────────────────
+  const bossMsgsByQuest = {};
+  for (const msg of row.systemMsgs) {
+    if (msg.info?.type !== 'boss_damage') continue;
+    const q = msg.info.quest || 'unknown';
+    if (!bossMsgsByQuest[q]) bossMsgsByQuest[q] = { bossDmg: 0, partyDmg: 0, crons: 0 };
+    bossMsgsByQuest[q].bossDmg  += parseFloat(msg.info.userDamage || 0);
+    bossMsgsByQuest[q].partyDmg += parseFloat(msg.info.bossDamage || 0);
+    bossMsgsByQuest[q].crons    += 1;
+  }
+
+  if (Object.keys(bossMsgsByQuest).length) {
+    const questRows = Object.entries(bossMsgsByQuest)
+      .sort(([, a], [, b]) => b.bossDmg - a.bossDmg)
+      .map(([q, d]) => `<tr>
+        <td>${esc(q)}</td>
+        <td class="stat-cell">${d.bossDmg.toFixed(1)}</td>
+        <td class="stat-cell ${d.partyDmg > 0 ? 'val--danger' : ''}">${d.partyDmg.toFixed(1)}</td>
+        <td class="stat-cell is-centered">${d.crons}</td>
+      </tr>`).join('');
+
+    parts.push(`
+      <p class="combat-modal-section-label">Boss Damage by Quest</p>
+      <div class="data-table-wrap combat-modal-table">
+        <table class="data-table">
+          <thead><tr>
+            <th>Quest</th>
+            <th class="stat-cell">Boss Dmg</th>
+            <th class="stat-cell">Party Dmg</th>
+            <th class="stat-cell is-centered">Crons</th>
+          </tr></thead>
+          <tbody>${questRows}</tbody>
+        </table>
+      </div>`);
+  }
+
+  // ── Spell breakdown ───────────────────────────────────────────────────
+  const spellTotals = {};
+  for (const msg of row.systemMsgs) {
+    const type = msg.info?.type || '';
+    if (!type.startsWith('spell_cast')) continue;
+    const spell = msg.info.spell;
+    if (!COMBAT_SPELL_MAP[spell]) continue;
+    spellTotals[spell] = (spellTotals[spell] || 0) + (msg.info.times || 1);
+  }
+
+  if (Object.keys(spellTotals).length) {
+    const spellRows = Object.entries(spellTotals)
+      .sort(([, a], [, b]) => b - a)
+      .map(([spell, count]) => `<tr>
+        <td>${esc(SPELL_LABELS[spell] || spell)}</td>
+        <td class="stat-cell is-centered">${count}</td>
+      </tr>`).join('');
+
+    parts.push(`
+      <p class="combat-modal-section-label">Spells Cast</p>
+      <div class="data-table-wrap combat-modal-table">
+        <table class="data-table">
+          <thead><tr>
+            <th>Spell</th>
+            <th class="stat-cell is-centered">Casts</th>
+          </tr></thead>
+          <tbody>${spellRows}</tbody>
+        </table>
+      </div>`);
+  }
+
+  if (parts.length === 1) {
+    parts.push(`<p class="quest-log__empty">No combat events found for this member.</p>`);
+  }
+
+  return parts.join('');
+}
+
+/**
+ * Chat history panel: chronological list of all messages attributed
+ * to this identity — system events formatted descriptively, regular
+ * chat as plain text bubbles.
+ */
+function buildCombatChatPanel(row) {
+  // Merge and sort all messages chronologically
+  const allMsgs = [
+    ...row.systemMsgs.map(m => ({ ...m, _source: 'system' })),
+    ...row.chatMsgs.map(m => ({ ...m, _source: 'chat' })),
+  ].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+  if (!allMsgs.length) {
+    return `<p class="quest-log__empty">No messages found for this member in the chat history.</p>`;
+  }
+
+  const items = allMsgs.map(msg => {
+    const ts = formatMsgTimestamp(msg.timestamp);
+
+    if (msg._source === 'chat') {
+      const text = esc(msg.unformattedText || msg.text || '');
+      return `<div class="combat-chat-msg">
+        <span class="combat-chat-ts">${ts}</span>
+        <span class="combat-chat-text">${text}</span>
+      </div>`;
+    }
+
+    // System event — format descriptively, pick class modifier for background
+    const info = msg.info || {};
+    let desc = '';
+    let mod  = 'boss';   // default modifier
+
+    switch (info.type) {
+      case 'boss_damage': {
+        const bd = parseFloat(info.userDamage || 0).toFixed(1);
+        const pd = parseFloat(info.bossDamage || 0);
+        const quest = info.quest ? ` (${esc(info.quest)})` : '';
+        const dmgBack = pd > 0
+          ? ` <span class="val--danger">· Party took ${pd.toFixed(1)} dmg</span>`
+          : '';
+        desc = `Dealt <strong>${bd}</strong> to boss${quest}${dmgBack}`;
+        mod  = 'boss';
+        break;
+      }
+      case 'spell_cast_party':
+      case 'spell_cast_party_multi': {
+        const name  = SPELL_LABELS[info.spell] || info.spell || 'Unknown spell';
+        const times = info.times > 1 ? ` ×${info.times}` : '';
+        desc = `Cast <strong>${esc(name)}${times}</strong> for the party`;
+        mod  = SPELL_CLASS_MOD[info.spell] || 'boss';
+        break;
+      }
+      case 'spell_cast_user': {
+        const name   = SPELL_LABELS[info.spell] || info.spell || 'Unknown spell';
+        const target = info.target ? ` on ${esc(info.target)}` : '';
+        desc = `Cast <strong>${esc(name)}</strong>${target}`;
+        mod  = SPELL_CLASS_MOD[info.spell] || 'boss';
+        break;
+      }
+      default:
+        desc = esc(msg.unformattedText || msg.text || info.type || '');
+    }
+
+    return `<div class="combat-chat-msg combat-chat-msg--${mod}">
+      <span class="combat-chat-ts">${ts}</span>
+      <span class="combat-chat-text">${desc}</span>
+    </div>`;
+  });
+
+  return `<div class="combat-chat-list">${items.join('')}</div>`;
+}
+
+
+/* ============================================================
    8. INITIALIZATION
    Wire all events here, in one place.
    ============================================================ */
@@ -5765,8 +6552,9 @@ function expandSnapshotsCard() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !$('member-modal').classList.contains('is-hidden')) closeMemberModal();
     if (e.key === 'Escape' && !$('scroll-modal').classList.contains('is-hidden'))  closeScrollModal();
+    if (e.key === 'Escape' && !$('combat-modal').classList.contains('is-hidden'))  closeCombatModal();
   });
-  document.querySelectorAll('.modal__tab').forEach(btn => {
+  document.querySelectorAll('#member-modal .modal__tab').forEach(btn => {
     btn.addEventListener('click', () => switchModalTab(btn.dataset.modalTab));
   });
 
@@ -5775,6 +6563,14 @@ function expandSnapshotsCard() {
   $('scroll-modal').addEventListener('click', e => {
     if (e.target === $('scroll-modal')) closeScrollModal();
   });
+
+  // Combat modal
+  $('combat-modal-close').addEventListener('click', closeCombatModal);
+  $('combat-modal').addEventListener('click', e => {
+    if (e.target === $('combat-modal')) closeCombatModal();
+  });
+  $('combat-modal-tab-summary').addEventListener('click', () => switchCombatModalTab('summary'));
+  $('combat-modal-tab-chat').addEventListener('click',    () => switchCombatModalTab('chat'));
 
   // Result view tabs
   $('result-tab-participation').addEventListener('click', () => switchResultTab('participation'));
@@ -5800,6 +6596,7 @@ function expandSnapshotsCard() {
   $('result-tab-scrolls').addEventListener('click',       () => switchResultTab('scrolls'));
   $('result-tab-eggs').addEventListener('click',          () => switchResultTab('eggs'));
   $('result-tab-potions').addEventListener('click',       () => switchResultTab('potions'));
+  $('result-tab-combat').addEventListener('click',        () => switchResultTab('combat'));
   $('result-tab-debug').addEventListener('click',         () => switchResultTab('debug'));
 
   // Eggs tab controls
