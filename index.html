@@ -354,6 +354,7 @@ body {
 .status-msg {
   font-size: var(--fs-sub);
   color: var(--color-text-sub);
+  margin-top: 10px;
   margin-bottom: 12px;
   min-height: 1em;
 }
@@ -361,28 +362,36 @@ body {
 .status-msg.is-ok    { color: var(--color-success-text); font-weight: 500; }
 
 /* Highlighted info bar with a left accent border */
-.info-bar {
-  font-size: var(--fs-sub);
-  color: var(--color-text-sub);
-  line-height: 1.7;
-  margin-bottom: 14px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-brand);
-  border-radius: 6px;
-  padding: 10px 16px;
-}
-.info-bar strong { color: var(--color-brand); font-weight: 700; }
-
-/* Small hint text above a table */
-.sort-hint {
+/* ── Banners ── */
+.banner {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: var(--fs-label);
-  color: var(--color-text-muted);
-  margin-bottom: 10px;
+  gap: 10px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border: 1px solid;
+  border-left: 4px solid;
+  margin-bottom: 16px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
 }
+.banner--brand   { display: block; background: var(--color-surface);       border-color: var(--color-border);        border-left-color: var(--color-brand);   color: var(--color-text-sub); }
+.banner--none    { background: var(--color-danger-light);  border-color: rgba(247,78,82,0.2);        border-left-color: var(--color-danger);  color: var(--color-danger-text); }
+.banner--pending { background: var(--color-warning-light); border-color: rgba(232,137,12,0.2);       border-left-color: var(--color-warning); color: var(--color-warning-text); }
+.banner--ready   { background: var(--color-success-light); border-color: rgba(36,204,143,0.2);       border-left-color: var(--color-success); color: var(--color-success-text); }
+.banner--active  { background: var(--color-info-light);    border-color: rgba(35,136,200,0.2);       border-left-color: var(--color-info);    color: var(--color-info-text); }
+.banner--brand strong { color: var(--color-brand); font-weight: 700; }
+.banner__link {
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  white-space: nowrap;
+}
+.banner__link:hover { opacity: 0.75; }
 
 /* Inline "Copied!" confirmation */
 .copy-confirm {
@@ -498,6 +507,9 @@ body {
   color: var(--color-text-sub);
   line-height: 1.65;
 }
+.welcome-body + .welcome-body,
+.welcome-body + .tip-list,
+.tip-list + .welcome-body { margin-top: 10px; }
 
 /* Numbered step flow */
 .step-list {
@@ -665,6 +677,9 @@ body {
 .progress-card__label {
   font-family: var(--font-condensed);
   font-size: var(--fs-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--color-text-muted);
 }
 
@@ -867,21 +882,6 @@ body {
 .member-cell.is-former { opacity: 0.45; }
 
 /* "former" badge displayed inline next to a name */
-.member-badge {
-  display: inline-block;
-  margin-left: 8px;
-  padding: 2px 7px;
-  border-radius: 20px;
-  font-family: var(--font-condensed);
-  font-size: var(--fs-badge);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  background: var(--color-danger-light);
-  color: var(--color-danger);
-  border: 1px solid rgba(247,78,82,0.25);
-  vertical-align: middle;
-}
 
 
 /* Quest completion cells */
@@ -918,36 +918,29 @@ body {
 .of-total { color: var(--color-text-ghost); font-weight: 400; }
 
 /* Days-since-last-quest cell */
-.days-badge {
-  display: inline-block;
+/* Unified badge — shape and font are fixed; only color differs per use case */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   padding: 2px 8px;
   border-radius: 20px;
   font-family: var(--font-condensed);
   font-size: var(--fs-sub);
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
-.days-badge--recent  { background: #d0f5e8; color: #148a5c; }   /* ≤ 14 d */
-.days-badge--medium  { background: #fef9c3; color: #92660a; }   /* ≤ 30 d */
-.days-badge--stale   { background: #fde0e0; color: #c0392b; }   /* > 30 d */
-.days-badge--unknown { color: var(--color-text-ghost); }
-
-/* Attendance pill */
-.attendance-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-family: var(--font-condensed);
-  font-size: var(--fs-sub);
-  font-weight: 700;
-  letter-spacing: 0.03em;
-}
-
-.attendance-badge--high   { background: #d0f5e8; color: #148a5c; }
-.attendance-badge--mid    { background: #fef9c3; color: #92660a; }
-.attendance-badge--low    { background: #fde0e0; color: #c0392b; }
-.attendance-badge--none   { color: var(--color-text-ghost); }
+.badge--green  { background: #d0f5e8; color: #148a5c; }
+.badge--yellow { background: #fef9c3; color: #92660a; }
+.badge--red    { background: #fde0e0; color: #c0392b; }
+.badge--orange { background: #ffe4cc; color: #a0430a; }
+.badge--blue   { background: #e8f0fe; color: #1a56db; }
+.badge--brand  { background: var(--color-brand-light); color: var(--color-brand); }
+.badge--muted  { color: var(--color-text-ghost); }
+.badge--no     { background: var(--color-surface-alt); color: var(--color-text-ghost); }
 
 /* Toggle control row */
 .table-controls {
@@ -957,31 +950,6 @@ body {
   margin-bottom: 10px;
   flex-wrap: wrap;
 }
-
-/* Divider between toggle groups and status badge */
-.table-controls__sep {
-  width: 1px;
-  height: 20px;
-  background: var(--color-border);
-  flex-shrink: 0;
-}
-
-/* Quest status badge — shown next to the include-current toggle */
-.quest-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-family: var(--font-condensed);
-  font-size: var(--fs-sub);
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-}
-
-.quest-status-badge--active   { background: var(--color-brand-light); color: var(--color-brand); border: 1px solid rgba(121,83,194,0.25); }
-.quest-status-badge--inactive { background: var(--color-surface-alt); color: var(--color-text-ghost); border: 1px solid var(--color-border); }
 
 .toggle-label {
   display: flex;
@@ -1079,6 +1047,7 @@ body {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 /* ── Header ── */
@@ -1289,6 +1258,38 @@ body {
   margin-bottom: 8px;
 }
 
+/* Bio text in member character panel */
+.member-bio {
+  font-size: var(--fs-sub);
+  color: var(--color-text-sub);
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+/* Gear list in member character panel */
+.gear-list { display: flex; flex-direction: column; }
+.gear-row {
+  display: flex;
+  gap: 10px;
+  font-size: var(--fs-sub);
+  padding: 5px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.gear-row:last-child { border-bottom: none; }
+.gear-row__label {
+  width: 66px;
+  flex-shrink: 0;
+  font-family: var(--font-condensed);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-text-muted);
+  padding-top: 1px;
+}
+.gear-row__value         { color: var(--color-text); }
+.gear-row__value--empty  { color: var(--color-text-ghost); }
+
 /* Stat cards grid */
 .char-stats-grid {
   display: grid;
@@ -1419,7 +1420,7 @@ body {
   font-size: var(--fs-label);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   color: var(--color-text-muted);
   margin-bottom: 3px;
 }
@@ -1586,18 +1587,6 @@ body {
 
 /* ── Has-it indicator cell ── */
 .has-it-cell { text-align: center; }
-.has-it-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 4px;
-}
-.has-it-badge--yes  { background: #d0f5e8; color: #148a5c; }
-.has-it-badge--no   { color: var(--color-border); }
-
-
 /* ── Scroll modal table cell sizing (matches analyze table) ── */
 #scroll-modal .data-table tbody td {
   padding: 11px 18px;
@@ -1620,22 +1609,6 @@ body {
 
 
 /* ── Debug classification badges ── */
-.class-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-family: var(--font-condensed);
-  font-size: var(--fs-badge);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-.class-badge--bb       { background: #d0f5e8; color: #148a5c; }           /* basic × basic   */
-.class-badge--bq       { background: var(--color-brand-light); color: var(--color-brand); }  /* basic × quest   */
-.class-badge--bs       { background: #fff3cd; color: #8a6400; }           /* basic × seasonal */
-.class-badge--qb       { background: #e8f0fe; color: #1a56db; }           /* quest × basic   */
-.class-badge--special  { background: var(--color-danger-light); color: var(--color-danger); } /* special keyed   */
-.class-badge--unknown  { background: #ffe4cc; color: #a0430a; }           /* unknown         */
 
 
 /* ── Quest Recommendations ── */
@@ -1713,9 +1686,10 @@ body {
 
 .rec-item__scroll {
   display: block;
+  font-family: var(--font-condensed);
   font-size: var(--fs-label);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   color: var(--color-text-muted);
   margin-top: 1px;
 }
@@ -1746,7 +1720,7 @@ body {
 
 .rec-stat__label {
   font-family: var(--font-condensed);
-  font-size: var(--fs-badge);
+  font-size: var(--fs-label);
   text-transform: uppercase;
   letter-spacing: 0.07em;
   color: var(--color-text-muted);
@@ -1760,53 +1734,8 @@ body {
   padding: 8px 0;
 }
 
-.rec-available-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-family: var(--font-condensed);
-  font-size: var(--fs-badge);
-  font-weight: 700;
-  background: #d0f5e8;
-  color: #148a5c;
-}
-.rec-available-badge--none {
-  background: var(--color-danger-light);
-  color: var(--color-danger);
-}
-
 
 /* ── Quest Status Banner ── */
-.quest-banner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  border-left: 4px solid;
-  margin-bottom: 16px;
-  font-size: var(--fs-body);
-  line-height: 1.4;
-}
-.quest-banner--none    { background: var(--color-danger-light);  border-color: rgba(247,78,82,0.2);  border-left-color: var(--color-danger);  color: var(--color-danger-text); }
-.quest-banner--pending { background: var(--color-warning-light); border-color: rgba(232,137,12,0.2); border-left-color: var(--color-warning); color: var(--color-warning-text); }
-.quest-banner--ready   { background: var(--color-success-light); border-color: rgba(36,204,143,0.2); border-left-color: var(--color-success); color: var(--color-success-text); }
-.quest-banner--active  { background: var(--color-info-light);    border-color: rgba(35,136,200,0.2); border-left-color: var(--color-info);    color: var(--color-info-text); }
-.quest-banner__link {
-  color: inherit;
-  text-decoration: underline;
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  white-space: nowrap;
-}
-.quest-banner__link:hover { opacity: 0.75; }
-
 /* ── Attendance Modal ── */
 .attendance-filter-row {
   display: flex;
@@ -1826,9 +1755,6 @@ body {
   color: var(--color-text-muted);
   padding-top: 4px;
 }
-.att-row--inactive { opacity: 0.45; }
-.att-accepted-yes { color: var(--color-success-text); font-weight: 600; }
-.att-accepted-no  { color: var(--color-danger-text); }
 #attendance-modal .att-col-member { min-width: 140px; }
 
 /* ============================================================
@@ -1841,7 +1767,9 @@ body {
 /** Ghost — zero / empty / not-applicable values */
 .val--zero    { color: var(--color-text-ghost); }
 
-/** Positive — non-zero count, not semantically good or bad */
+/** Text — full-contrast value, overrides subdued context */
+.val--text    { color: var(--color-text); }
+
 .val--positive { font-weight: 600; }
 
 /** Danger — shortfall, error, needs-attention values */
@@ -1859,6 +1787,22 @@ body {
   flex-wrap: wrap;
   gap: 10px 14px;
 }
+
+#rec-user-filter        { max-width: 200px; }
+#rec-active-only-label  { margin-left: 4px; }
+#eggs-highlight,
+#potions-highlight      { max-width: 200px; }
+
+/* Empty-state cell inside a tbody */
+.table-empty-cell {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-muted);
+}
+
+/* rec-empty padding variants */
+.rec-empty--inset { padding: 20px; }
+.rec-empty--row   { padding: 16px 0; }
 
 /* Debug table group header row */
 .debug-group-header { background: var(--color-surface-alt); }
@@ -2100,7 +2044,7 @@ body {
   .segmented-control { flex-wrap: wrap; }
 
   /* Info bar — smaller text to prevent overflow */
-  .info-bar { font-size: var(--fs-label); }
+  .banner { font-size: var(--fs-label); }
 
   /* Analyze table — allow horizontal scroll */
   .data-table-wrap--analyze { overflow-x: auto; }
@@ -2359,7 +2303,7 @@ body {
       </div>
     </div>
 
-    <div class="info-bar is-hidden" id="result-meta" aria-live="polite"></div>
+    <div class="banner banner--brand is-hidden" id="result-meta" aria-live="polite"></div>
 
     <!-- Result view tabs (hidden until generate() runs) -->
     <div class="is-hidden" id="result-tabs">
@@ -2391,23 +2335,6 @@ body {
           </span>
           Show former members
         </label>
-        <div class="table-controls__sep" aria-hidden="true"></div>
-        <label class="toggle-label" for="current-quest-toggle" id="current-quest-toggle-label">
-          <span class="toggle-switch">
-            <input type="checkbox" id="current-quest-toggle" role="switch" aria-label="Include current active quest" disabled>
-            <span class="toggle-switch__track"></span>
-            <span class="toggle-switch__thumb"></span>
-          </span>
-          Include current
-        </label>
-        <span class="quest-status-badge quest-status-badge--inactive" id="quest-status-badge" aria-live="polite">
-          <span class="material-symbols-outlined icon--sm" aria-hidden="true">bedtime</span>
-          No quest active
-        </span>
-        <span class="sort-hint" style="margin-bottom:0">
-          <span class="material-symbols-outlined icon--sm" aria-hidden="true">swap_vert</span>
-          Click any column header to sort
-        </span>
       </div>
 
       <div class="data-table-wrap data-table-wrap--analyze is-hidden" id="analyze-table-wrap">
@@ -2420,9 +2347,9 @@ body {
     </div>
 
     <!-- Panel: Quest Recommendations -->
-    <div id="result-panel-quests">
-      <div class="is-hidden quest-banner" id="quest-banner" role="status" aria-live="polite"></div>
-      <div class="filter-row filter-row--panel" style="align-items:center;">
+    <div class="is-hidden" id="result-panel-quests">
+      <div class="is-hidden banner" id="quest-banner" role="status" aria-live="polite"></div>
+      <div class="filter-row filter-row--panel">
         <label class="field-label">Ranking Mode</label>
         <div class="segmented-control">
           <button class="pm-type-btn is-active" id="rec-mode-shortfall"  data-recmode="shortfall">Total Shortfall</button>
@@ -2430,10 +2357,10 @@ body {
           <button class="pm-type-btn"           id="rec-mode-yield"      data-recmode="yield">Effective Yield</button>
         </div>
         <label class="field-label" for="rec-user-filter">Scroll holder</label>
-        <select class="field-input field-input--inline" id="rec-user-filter" style="max-width:200px;">
+        <select class="field-input field-input--inline" id="rec-user-filter">
           <option value="">All members</option>
         </select>
-        <label class="toggle-label" for="rec-active-only" id="rec-active-only-label" style="margin-left:4px;">
+        <label class="toggle-label" for="rec-active-only" id="rec-active-only-label">
           <span class="toggle-switch">
             <input type="checkbox" id="rec-active-only" role="switch" aria-label="Only show quests where a party member owns the scroll">
             <span class="toggle-switch__track"></span>
@@ -2470,7 +2397,7 @@ body {
     <div class="is-hidden" id="result-panel-eggs">
       <div class="filter-row filter-row--panel">
         <label class="field-label" for="eggs-highlight">Highlight</label>
-        <select class="field-input field-input--inline" id="eggs-highlight" style="max-width:200px;"></select>
+        <select class="field-input field-input--inline" id="eggs-highlight"></select>
         <label class="field-label" for="eggs-filter">Filter</label>
         <input class="field-input field-input--inline" type="text" id="eggs-filter" placeholder="Quest egg…">
       </div>
@@ -2486,7 +2413,7 @@ body {
     <div class="is-hidden" id="result-panel-potions">
       <div class="filter-row filter-row--panel">
         <label class="field-label" for="potions-highlight">Highlight</label>
-        <select class="field-input field-input--inline" id="potions-highlight" style="max-width:200px;"></select>
+        <select class="field-input field-input--inline" id="potions-highlight"></select>
         <label class="field-label" for="potions-filter">Filter</label>
         <input class="field-input field-input--inline" type="text" id="potions-filter" placeholder="Quest potion…">
       </div>
@@ -2551,48 +2478,48 @@ body {
     <div class="card">
       <h2 class="card__label">Quest Participation</h2>
       <p class="welcome-body">Habitica only exposes cumulative lifetime quest completion counts — it does not expose a log of when each quest was completed. Participation is inferred by diffing the counts between consecutive snapshots. A positive delta means the member completed at least one run of that quest in that interval.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Eligibility</strong> works as follows. For each snapshot interval, the tool infers the party's total completions for each quest type as the maximum delta observed across all members present in both snapshots. A member is only held eligible for quests that ran while they were in the party. Members who appear for the first time in snapshot N are not counted as eligible for any quest that completed before snapshot N.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Est. Join date</strong> is the timestamp of the earliest snapshot in which a member appears. If they were already present in the first snapshot you uploaded, the date is prefixed with ≤ because their actual join date may be earlier than your oldest file.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Last Quest</strong> is the number of days between the member's last confirmed quest activity and the final snapshot. It cannot detect activity that happened before your earliest file, or activity that happened between two snapshots where the member's total count didn't change.</p>
+      <p class="welcome-body"><strong>Eligibility</strong> works as follows. For each snapshot interval, the tool infers the party's total completions for each quest type as the maximum delta observed across all members present in both snapshots. A member is only held eligible for quests that ran while they were in the party. Members who appear for the first time in snapshot N are not counted as eligible for any quest that completed before snapshot N.</p>
+      <p class="welcome-body"><strong>Est. Join date</strong> is the timestamp of the earliest snapshot in which a member appears. If they were already present in the first snapshot you uploaded, the date is prefixed with ≤ because their actual join date may be earlier than your oldest file.</p>
+      <p class="welcome-body"><strong>Last Quest</strong> is the number of days between the member's last confirmed quest activity and the final snapshot. It cannot detect activity that happened before your earliest file, or activity that happened between two snapshots where the member's total count didn't change.</p>
     </div>
 
     <div class="card">
       <h2 class="card__label">Pet &amp; Mount Collection</h2>
       <p class="welcome-body">The hatchable pet universe is inferred from the party's combined collection rather than from a hardcoded master list. The tool identifies which quest animals and quest potions have been seen across all party members, then builds the full set of possible combinations: Standard animals × Standard potions, Standard animals × Quest potions, Quest animals × Standard potions, and a small set of exception combinations. All combinations listed in the scroll maps are always included, even if nobody in the party has hatched them yet.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Shortfall</strong> for a given combination is the number of hatches still needed. Most combinations require two hatches (one for the pet, one to raise it to a mount). Quest × Quest combinations are treated as binary — either owned or not. Shortfall is reduced by the member's current inventory of the relevant egg or potion.</p>
-      <p class="welcome-body" style="margin-top:10px;">Special pets (Veteran, Gilded, Hopeful, RoyalPurple variants, and others that cannot be hatched normally) are excluded from shortfall calculations entirely.</p>
+      <p class="welcome-body"><strong>Shortfall</strong> for a given combination is the number of hatches still needed. Most combinations require two hatches (one for the pet, one to raise it to a mount). Quest × Quest combinations are treated as binary — either owned or not. Shortfall is reduced by the member's current inventory of the relevant egg or potion.</p>
+      <p class="welcome-body">Special pets (Veteran, Gilded, Hopeful, RoyalPurple variants, and others that cannot be hatched normally) are excluded from shortfall calculations entirely.</p>
     </div>
 
     <div class="card">
       <h2 class="card__label">Quest Recommendations</h2>
       <p class="welcome-body">Recommendations are only shown for quests that reward a hatchable egg or potion. Each quest run rewards 3 copies of the item. The three ranking modes are:</p>
-      <ul class="tip-list" style="margin-top:10px;">
+      <ul class="tip-list">
         <li><strong>Total Shortfall</strong> — ranks by the sum of shortfall across all party members. Prioritizes the quest with the most total hatches still needed.</li>
         <li><strong>Prioritize Unowned</strong> — ranks by the number of members who have neither a pet nor a mount of this variety. Useful for ensuring everyone gets their first hatch before duplicates are accumulated.</li>
         <li><strong>Effective Yield</strong> — ranks by the sum of <code>min(shortfall, 3)</code> per member. Since each run gives exactly 3 items, any shortfall beyond 3 requires multiple runs. This mode maximizes the number of hatches actually satisfied per quest run.</li>
       </ul>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Scroll holders</strong> are party members who own at least one copy of the relevant quest scroll. The "Scroll owned" filter limits results to scrolls that at least one party member can actually run.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Scrolls Needed</strong> in the Scrolls tab is <code>ceil(maxMemberShortfall / 3)</code> — the number of quest runs needed to satisfy the most-behind party member. <strong>Scrolls to Buy</strong> is the difference between that number and the party's current total copies of that scroll.</p>
+      <p class="welcome-body"><strong>Scroll holders</strong> are party members who own at least one copy of the relevant quest scroll. The "Scroll owned" filter limits results to scrolls that at least one party member can actually run.</p>
+      <p class="welcome-body"><strong>Scrolls Needed</strong> in the Scrolls tab is <code>ceil(maxMemberShortfall / 3)</code> — the number of quest runs needed to satisfy the most-behind party member. <strong>Scrolls to Buy</strong> is the difference between that number and the party's current total copies of that scroll.</p>
     </div>
 
     <div class="card">
       <h2 class="card__label">Combat Performance</h2>
       <p class="welcome-body">The Combat tab aggregates boss damage, party damage, and spell casts from the party chat history embedded in each snapshot. Habitica includes up to 400 chat messages per snapshot; loading multiple snapshots significantly extends coverage. The tool deduplicates messages across all uploaded files and skips intermediate snapshots whose oldest message falls within a range already covered by a more recent file — always processing the first and last snapshots to maximise reach.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Boss Dmg</strong> is the sum of damage that member dealt to the boss across all cron events visible in chat. <strong>Party Dmg</strong> is the total damage the boss dealt back to the party during that member's cron events — caused by missed or incomplete tasks. <strong>Crons</strong> is the number of cron events attributed to that member in the chat window.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Spell columns</strong> count party-wide cast events: Blessing (Healer heal-all), Ethereal Surge (Mage MP restore), Tools of the Trade (Rogue PER buff), and Other Buffs (Warrior Valorous Presence / Intimidating Gaze, Healer Protective Aura, Mage Earthquake). The cosmetic Shiny Seed spell is excluded.</p>
-      <p class="welcome-body" style="margin-top:10px;"><strong>Identity resolution:</strong> system messages carry only a display name, which can change over time. The tool cross-references display names against regular chat messages (which carry a stable user ID) and then against the members list to resolve display names to Habitica usernames where unambiguous. Members whose display name maps to more than one user ID, or whose user ID is not in the current members list, are listed with a <strong>?</strong> marker and kept as separate rows.</p>
+      <p class="welcome-body"><strong>Boss Dmg</strong> is the sum of damage that member dealt to the boss across all cron events visible in chat. <strong>Party Dmg</strong> is the total damage the boss dealt back to the party during that member's cron events — caused by missed or incomplete tasks. <strong>Crons</strong> is the number of cron events attributed to that member in the chat window.</p>
+      <p class="welcome-body"><strong>Spell columns</strong> count party-wide cast events: Blessing (Healer heal-all), Ethereal Surge (Mage MP restore), Tools of the Trade (Rogue PER buff), and Other Buffs (Warrior Valorous Presence / Intimidating Gaze, Healer Protective Aura, Mage Earthquake). The cosmetic Shiny Seed spell is excluded.</p>
+      <p class="welcome-body"><strong>Identity resolution:</strong> system messages carry only a display name, which can change over time. The tool cross-references display names against regular chat messages (which carry a stable user ID) and then against the members list to resolve display names to Habitica usernames where unambiguous. Members whose display name maps to more than one user ID, or whose user ID is not in the current members list, are listed with a <strong>?</strong> marker and kept as separate rows.</p>
     </div>
 
     <div class="card">
       <h2 class="card__label">Quest Status Banner</h2>
       <p class="welcome-body">The Quest Recommendations tab opens with a banner summarising the current quest state drawn from the most recent snapshot.</p>
-      <ul class="tip-list" style="margin-top:10px;">
+      <ul class="tip-list">
         <li><strong>No quest selected</strong> (red) — no quest key is present in the snapshot. Use the recommendations below to choose one.</li>
         <li><strong>Pending</strong> (orange or green) — a quest has been invited but not yet started. The banner shows how many active members have accepted. Orange means at least one active member has not yet responded; green means all active members have accepted and the quest can be started without leaving anyone behind.</li>
         <li><strong>Active</strong> (blue) — the quest is already running. The banner prompts you to plan ahead for the next one.</li>
       </ul>
-      <p class="welcome-body" style="margin-top:10px;"><strong>"Active member"</strong> is defined as a member who meets two thresholds simultaneously: a minimum participation rate (completed quests ÷ eligible quests) and a maximum time since last login. The defaults are 34% participation and 24 hours. Both thresholds can be adjusted in the <strong>View details</strong> modal that appears on the pending banner. Changes only affect the banner count after clicking <strong>Save changes</strong>; adjusting the inputs without saving updates the modal table live but leaves the banner unchanged.</p>
-      <p class="welcome-body" style="margin-top:10px;">Participation rate requires two or more snapshots to compute. In single-snapshot mode the participation threshold is ignored and only login recency is applied.</p>
+      <p class="welcome-body"><strong>"Active member"</strong> is defined as a member who meets two thresholds simultaneously: a minimum participation rate (completed quests ÷ eligible quests) and a maximum time since last login. The defaults are 34% participation and 24 hours. Both thresholds can be adjusted in the <strong>View details</strong> modal that appears on the pending banner. Changes only affect the banner count after clicking <strong>Save changes</strong>; adjusting the inputs without saving updates the modal table live but leaves the banner unchanged.</p>
+      <p class="welcome-body">Participation rate requires two or more snapshots to compute. In single-snapshot mode the participation threshold is ignored and only login recency is applied.</p>
     </div>
 
     <div class="card">
@@ -2994,6 +2921,8 @@ document.querySelectorAll('.text-link[data-tab]').forEach(link => {
 /* 4a. State ------------------------------------------------- */
 
 const RATE_LIMIT_MS = 2100; // ~2.1 s between API calls to stay under 30/60 s
+const MS_PER_DAY    = 86_400_000;  // 1000 * 60 * 60 * 24
+const QUEST_COPIES  = 3;   // each quest scroll awards 3 eggs or 3 potions
 
 let extractData = [];   // [{ id, name, quests }]
 let rawResults  = {};   // full API payload — written to the download file
@@ -3332,7 +3261,7 @@ let lastRows         = null;   // cached after generate() — reused by toggle
 
 // Per-table sort state for Scrolls, Eggs, Potions, Debug
 const scrollSort   = { key: 'total',   dir: -1 };
-let   scrollCat    = 'all';  // 'all' | 'eggs' | 'potions' | 'other'
+let scrollCat = 'all';        // 'all' | 'eggs' | 'potions' | 'other'
 const eggsSort   = { key: 'players', dir: -1 };
 const potionsSort= { key: 'players', dir: -1 };
 const debugSort  = { key: 'key',     dir:  1 };
@@ -3351,6 +3280,7 @@ let recFilterUser = '';        // username to filter by scroll ownership; '' = n
 
 let attendancePct   = 34;     // saved participation threshold for quest banner / attendance modal
 let attendanceHours = 24;     // saved login-recency threshold (hours)
+let attendanceSort  = { key: 'name', dir: 1 };  // sort state for the attendance modal table
 
 /* 5b. File handling ----------------------------------------- */
 
@@ -3560,23 +3490,6 @@ function clearAnalyzeResults() {
  * Update the quest status badge and toggle based on the latest file's quest data.
  * Called each time generate() runs so it reflects the current file set.
  */
-function updateQuestStatusUI(partyQuest, questName) {
-  const toggle = $('current-quest-toggle');
-  const badge  = $('quest-status-badge');
-  const isActive = partyQuest?.active === true && partyQuest?.key;
-
-  if (isActive) {
-    toggle.disabled = false;
-    badge.className = 'quest-status-badge quest-status-badge--active';
-    badge.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">swords</span> ${esc(questName || partyQuest.key)}`;
-  } else {
-    toggle.disabled = true;
-    toggle.checked  = false;
-    badge.className = 'quest-status-badge quest-status-badge--inactive';
-    badge.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">bedtime</span> No quest active`;
-  }
-}
-
 /* ============================================================
    Quest Status Banner + Attendance Modal
    ============================================================ */
@@ -3654,9 +3567,16 @@ function computeAttendanceCounts(participationPct, loginHours) {
 }
 
 /** Render (or re-render) the attendance table inside the modal. */
+/** Read and clamp the attendance modal filter inputs. */
+function readAttendanceInputs() {
+  return {
+    pct:   Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0)),
+    hours: Math.max(1, parseInt($('att-login-threshold').value, 10) || 24),
+  };
+}
+
 function renderAttendanceTable() {
-  const participationPct = Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0));
-  const loginHours       = Math.max(1, parseInt($('att-login-threshold').value, 10) || 24);
+  const { pct: participationPct, hours: loginHours } = readAttendanceInputs();
   const hasRows          = Array.isArray(lastRows) && lastRows.length > 0;
 
   const { x, y, tableRows, nowMs } = computeAttendanceCounts(participationPct, loginHours);
@@ -3678,27 +3598,34 @@ function renderAttendanceTable() {
   const body  = $('attendance-modal-body');
 
   if (!tableRows.length) {
-    body.innerHTML = `<p class="rec-empty" style="padding:20px;">No members found.</p>`;
+    body.innerHTML = `<p class="rec-empty rec-empty--inset">No members found.</p>`;
     return;
   }
 
   const table = document.createElement('table');
   table.className = 'data-table';
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th class="att-col-member">Member</th>
-        <th class="stat-cell">Accepted</th>
-        <th class="stat-cell">Participation</th>
-        <th class="stat-cell">Last Login</th>
-      </tr>
-    </thead>`;
+
+  // Apply sort
+  const s = attendanceSort;
+  const sorted = [...tableRows];
+  if      (s.key === 'name')     sorted.sort((a, b) => s.dir * a.name.localeCompare(b.name));
+  else if (s.key === 'accepted') sorted.sort((a, b) => s.dir * ((b.accepted ? 1 : 0) - (a.accepted ? 1 : 0)) || a.name.localeCompare(b.name));
+  else if (s.key === 'active')   sorted.sort((a, b) => s.dir * ((b.isActive ? 1 : 0) - (a.isActive ? 1 : 0)) || a.name.localeCompare(b.name));
+  else if (s.key === 'login')    sorted.sort((a, b) => s.dir * (a.loginAgeMs - b.loginAgeMs));
+
+  const thead = document.createElement('thead');
+  const hr    = document.createElement('tr');
+  hr.appendChild(makeColHeader('Member',    'name',     s, renderAttendanceTable, 'att-col-member', 1));
+  hr.appendChild(makeColHeader('Accepted',  'accepted', s, renderAttendanceTable, 'stat-cell'));
+  hr.appendChild(makeColHeader('Active',    'active',   s, renderAttendanceTable, 'stat-cell'));
+  hr.appendChild(makeColHeader('Last Login','login',    s, renderAttendanceTable, 'stat-cell'));
+  thead.appendChild(hr);
+  table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
 
-  for (const r of tableRows) {
+  for (const r of sorted) {
     const tr = document.createElement('tr');
-    if (!r.isActive) tr.classList.add('att-row--inactive');
 
     // Member name — opens member detail modal
     tr.appendChild(makeNameTd(r, closeAttendanceModal));
@@ -3706,15 +3633,18 @@ function renderAttendanceTable() {
     // Accepted
     const accTd = document.createElement('td');
     accTd.className = 'stat-cell';
-    if (r.accepted) {
-      accTd.innerHTML = `<span class="att-accepted-yes">✓ Yes</span>`;
-    } else {
-      accTd.innerHTML = `<span class="att-accepted-no">✗ No</span>`;
-    }
+    accTd.innerHTML = r.accepted
+      ? `<span class="badge badge--green">Yes</span>`
+      : `<span class="badge badge--red">No</span>`;
     tr.appendChild(accTd);
 
-    // Participation
-    tr.appendChild(makeAttendTd(r.rate));
+    // Active (based on current filter criteria)
+    const activeTd = document.createElement('td');
+    activeTd.className = 'stat-cell';
+    activeTd.innerHTML = r.isActive
+      ? `<span class="badge badge--green">Active</span>`
+      : `<span class="badge badge--no">Inactive</span>`;
+    tr.appendChild(activeTd);
 
     // Last login
     tr.appendChild(makeLoginTd(r.lastLogin, nowMs));
@@ -3732,8 +3662,7 @@ function renderAttendanceTable() {
 
 /** Enable Save only when inputs differ from the last saved state. */
 function updateSaveButtonState() {
-  const pct   = Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0));
-  const hours = Math.max(1, parseInt($('att-login-threshold').value, 10) || 24);
+  const { pct, hours } = readAttendanceInputs();
   $('att-save-changes').disabled = (pct === attendancePct && hours === attendanceHours);
 }
 
@@ -3741,6 +3670,7 @@ function updateSaveButtonState() {
 function openAttendanceModal() {
   $('att-participation-threshold').value = attendancePct;
   $('att-login-threshold').value         = attendanceHours;
+  attendanceSort = { key: 'active', dir: 1 };
   show($('attendance-modal'));
   document.body.style.overflow = 'hidden';
   renderAttendanceTable();
@@ -3766,7 +3696,7 @@ function renderQuestBanner() {
 
   // No quest selected
   if (!pq?.key) {
-    el.className = 'quest-banner quest-banner--none';
+    el.className = 'banner banner--none';
     el.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">info</span>
       No quest selected. Check below for recommendations.`;
     show(el);
@@ -3776,7 +3706,7 @@ function renderQuestBanner() {
   // Quest already active (started)
   if (pq.active) {
     const name = lastFile.questName || pq.key;
-    el.className = 'quest-banner quest-banner--active';
+    el.className = 'banner banner--active';
     el.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">swords</span>
       <span><strong>${esc(name)}</strong> is already active. Consider planning ahead for the next quest.</span>`;
     show(el);
@@ -3787,10 +3717,10 @@ function renderQuestBanner() {
   const { x, y } = computeAttendanceCounts(attendancePct, attendanceHours);
   const name = lastFile.questName || pq.key;
   const allAccepted = y > 0 && x === y;
-  el.className = `quest-banner ${allAccepted ? 'quest-banner--ready' : 'quest-banner--pending'}`;
+  el.className = `banner ${allAccepted ? 'banner--ready' : 'banner--pending'}`;
   el.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">schedule</span>
     <span><strong>${esc(name)}</strong> is pending. ${x} of ${y} active members have accepted the invitation.
-    <button class="quest-banner__link" id="quest-banner-view-details">View details</button></span>`;
+    <button class="banner__link" id="quest-banner-view-details">View details</button></span>`;
   show(el);
 
   $('quest-banner-view-details').addEventListener('click', openAttendanceModal);
@@ -3815,10 +3745,8 @@ function generate() {
   const firstFile  = files[0];
   lastFile         = files[files.length - 1];
 
-  // Update the quest status badge from the latest file, then read toggle state
   const activeQuest = lastFile.partyQuest?.active ? lastFile.partyQuest : null;
-  updateQuestStatusUI(activeQuest, lastFile.questName);
-  const includeCurrentQuest = activeQuest && $('current-quest-toggle').checked;
+  const includeCurrentQuest = !!activeQuest;
 
   // ── Single-file path: skip participation, run inventory analysis only ──
   if (singleFile) {
@@ -3841,11 +3769,12 @@ function generate() {
     buildCombatData();
     renderCombatTable();
 
-    // Disable participation tab, default to Quest Recommendations
+    // Disable participation tab, default to Quest Recommendations on first run
     $('result-tab-participation').disabled = true;
     $('result-tab-participation').title    = 'Requires 2 or more snapshots';
+    const wasTabsVisible = !$('result-tabs').classList.contains('is-hidden');
     show($('result-tabs'));
-    switchResultTab('quests');
+    if (!wasTabsVisible) switchResultTab('quests');
 
     const metaEl = $('result-meta');
     show(metaEl);
@@ -4052,7 +3981,7 @@ function generate() {
     let daysSinceLastQuest = null;
     if (lastActiveIdx !== null && lastFile.timestamp && files[lastActiveIdx].timestamp) {
       const ms = lastFile.timestamp - files[lastActiveIdx].timestamp;
-      daysSinceLastQuest = Math.round(ms / (1000 * 60 * 60 * 24));
+      daysSinceLastQuest = Math.round(ms / MS_PER_DAY);
     }
 
     const skippedTotal = Math.max(0, eligibleTotal - completedTotal);
@@ -4115,9 +4044,10 @@ function generate() {
   buildCombatData();
   renderCombatTable();
 
-  // Show tab strip, default to Quest Recommendations
+  // Show tab strip, default to Quest Recommendations on first run
+  const wasTabsVisible = !$('result-tabs').classList.contains('is-hidden');
   show($('result-tabs'));
-  switchResultTab('quests');
+  if (!wasTabsVisible) switchResultTab('quests');
 
   statusEl.textContent = 'Table generated.';
   statusEl.className   = 'status-msg is-ok';
@@ -4220,7 +4150,7 @@ function renderAnalyzeTable(rows, quests) {
     nameBtn.textContent = displayName;
     nameBtn.addEventListener('click', () => openMemberModal(row.username));
     nameTd.appendChild(nameBtn);
-    if (isFormer) nameTd.insertAdjacentHTML('beforeend', `<span class="member-badge" aria-label="former member">former</span>`);
+    if (isFormer) nameTd.insertAdjacentHTML('beforeend', `<span class="badge badge--red" aria-label="former member">former</span>`);
     tr.appendChild(nameTd);
 
     // Est. Join cell
@@ -4264,10 +4194,10 @@ function renderAnalyzeTable(rows, quests) {
     const attendTd = document.createElement('td');
     attendTd.className = 'stat-cell';
     if (pct === -1) {
-      attendTd.innerHTML = `<span class="attendance-badge--none">—</span>`;
+      attendTd.innerHTML = `<span class="badge badge--muted">—</span>`;
     } else {
-      const cls = pct > 66 ? 'attendance-badge--high' : pct > 33 ? 'attendance-badge--mid' : 'attendance-badge--low';
-      attendTd.innerHTML = `<span class="attendance-badge ${cls}">${pct}%</span>`;
+      const cls = pct > 66 ? 'badge--green' : pct > 33 ? 'badge--yellow' : 'badge--red';
+      attendTd.innerHTML = `<span class="badge ${cls}">${pct}%</span>`;
     }
     tr.appendChild(attendTd);
 
@@ -4276,10 +4206,10 @@ function renderAnalyzeTable(rows, quests) {
     daysTd.className = 'stat-cell';
     const d = row.daysSinceLastQuest;
     if (d === null) {
-      daysTd.innerHTML = `<span class="days-badge days-badge--unknown">—</span>`;
+      daysTd.innerHTML = `<span class="badge badge--muted">—</span>`;
     } else {
-      const cls = d < 7 ? 'days-badge--recent' : d < 14 ? 'days-badge--medium' : 'days-badge--stale';
-      daysTd.innerHTML = `<span class="days-badge ${cls}">${d}d</span>`;
+      const cls = d < 7 ? 'badge--green' : d < 14 ? 'badge--yellow' : 'badge--red';
+      daysTd.innerHTML = `<span class="badge ${cls}">${d}d</span>`;
     }
     tr.appendChild(daysTd);
 
@@ -4288,12 +4218,12 @@ function renderAnalyzeTable(rows, quests) {
     loginTd.className = 'stat-cell';
     const ll = row.lastLogin;
     if (!ll) {
-      loginTd.innerHTML = `<span class="days-badge days-badge--unknown">—</span>`;
+      loginTd.innerHTML = `<span class="badge badge--muted">—</span>`;
     } else {
       const refTs  = lastFile?.timestamp ?? new Date();
-      const ageDays = Math.round((refTs - ll) / (1000 * 60 * 60 * 24));
-      const cls = ageDays < 7 ? 'days-badge--recent' : ageDays < 14 ? 'days-badge--medium' : 'days-badge--stale';
-      loginTd.innerHTML = `<span class="days-badge ${cls}" title="${ll.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}">${ageDays}d</span>`;
+      const ageDays = Math.round((refTs - ll) / MS_PER_DAY);
+      const cls = ageDays < 7 ? 'badge--green' : ageDays < 14 ? 'badge--yellow' : 'badge--red';
+      loginTd.innerHTML = `<span class="badge ${cls}" title="${ll.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}">${ageDays}d</span>`;
     }
     tr.appendChild(loginTd);
 
@@ -4351,8 +4281,8 @@ function renderAnalyzeTable(rows, quests) {
   if (overallPct === -1) {
     attendFootTd.textContent = '—';
   } else {
-    const cls = overallPct > 66 ? 'attendance-badge--high' : overallPct > 33 ? 'attendance-badge--mid' : 'attendance-badge--low';
-    attendFootTd.innerHTML = `<span class="attendance-badge ${cls}">${overallPct}%</span>`;
+    const cls = overallPct > 66 ? 'badge--green' : overallPct > 33 ? 'badge--yellow' : 'badge--red';
+    attendFootTd.innerHTML = `<span class="badge ${cls}">${overallPct}%</span>`;
   }
   footerRow.appendChild(attendFootTd);
 
@@ -4474,7 +4404,7 @@ function renderScrollTable() {
                           : color ? lastEggPotionData?.potions?.[color] : null;
     if (!entry) return 0;
     const maxShortfall = Math.max(0, ...Object.values(entry.memberData).map(m => m.shortfall ?? 0));
-    return maxShortfall > 0 ? Math.ceil(maxShortfall / 3) : 0;
+    return maxShortfall > 0 ? Math.ceil(maxShortfall / QUEST_COPIES) : 0;
   }
 
   let entries = Object.entries(lastScrollData)
@@ -4507,7 +4437,7 @@ function renderScrollTable() {
   tbody.innerHTML = '';
 
   if (!entries.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--color-text-muted);">No scrolls match the filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="table-empty-cell">No scrolls match the filter.</td></tr>`;
     return;
   }
 
@@ -4605,22 +4535,22 @@ function makeLoginTd(lastLogin, refTs) {
   const td = document.createElement('td');
   td.className = 'stat-cell';
   if (!lastLogin) {
-    td.innerHTML = `<span class="days-badge days-badge--unknown">—</span>`;
+    td.innerHTML = `<span class="badge badge--muted">—</span>`;
     return td;
   }
   const ageMs  = refTs - lastLogin;
   const ageMin = Math.floor(ageMs / (1000 * 60));
   let label, cls;
   if (ageMin < 60) {
-    label = `${ageMin}m`;         cls = 'days-badge--recent';
+    label = `${ageMin}m`;         cls = 'badge--green';
   } else if (ageMin < 1440) {
-    label = `${Math.floor(ageMin / 60)}h ${ageMin % 60}m`; cls = 'days-badge--recent';
+    label = `${Math.floor(ageMin / 60)}h ${ageMin % 60}m`; cls = 'badge--green';
   } else {
-    const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
+    const ageDays = Math.floor(ageMs / MS_PER_DAY);
     label = `${ageDays}d`;
-    cls   = ageDays < 7 ? 'days-badge--recent' : ageDays < 14 ? 'days-badge--medium' : 'days-badge--stale';
+    cls   = ageDays < 7 ? 'badge--green' : ageDays < 14 ? 'badge--yellow' : 'badge--red';
   }
-  td.innerHTML = `<span class="days-badge ${cls}">${label}</span>`;
+  td.innerHTML = `<span class="badge ${cls}">${label}</span>`;
   return td;
 }
 
@@ -4629,10 +4559,10 @@ function makeAttendTd(attendPct) {
   const td = document.createElement('td');
   td.className = 'stat-cell';
   if (attendPct === null) {
-    td.innerHTML = `<span class="attendance-badge--none">—</span>`;
+    td.innerHTML = `<span class="badge badge--muted">—</span>`;
   } else {
-    const cls = attendPct > 66 ? 'attendance-badge--high' : attendPct > 33 ? 'attendance-badge--mid' : 'attendance-badge--low';
-    td.innerHTML = `<span class="attendance-badge ${cls}">${attendPct}%</span>`;
+    const cls = attendPct > 66 ? 'badge--green' : attendPct > 33 ? 'badge--yellow' : 'badge--red';
+    td.innerHTML = `<span class="badge ${cls}">${attendPct}%</span>`;
   }
   return td;
 }
@@ -4646,7 +4576,7 @@ function makeNameTd(m, onClose) {
   btn.textContent = m.displayName;
   btn.addEventListener('click', () => { onClose(); openMemberModal(m.username); });
   td.appendChild(btn);
-  if (m.isFormer) td.insertAdjacentHTML('beforeend', `<span class="member-badge">former</span>`);
+  if (m.isFormer) td.insertAdjacentHTML('beforeend', `<span class="badge badge--red">former</span>`);
   return td;
 }
 
@@ -4977,7 +4907,7 @@ function renderEPTable(type, highlightId, filterId, sortState, theadId, tbodyId)
   tbody.innerHTML = '';
 
   if (!entries.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--color-text-muted);">Nothing matches the filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="table-empty-cell">Nothing matches the filter.</td></tr>`;
     return;
   }
 
@@ -5006,7 +4936,7 @@ function renderEPTable(type, highlightId, filterId, sortState, theadId, tbodyId)
     const activeTd = document.createElement('td');
     activeTd.className = 'stat-cell';
     activeTd.innerHTML = active > 0
-      ? `<span class="rec-available-badge">${active}</span>`
+      ? `<span class="badge badge--green">${active}</span>`
       : `<span class="val--zero">0</span>`;
     tr.appendChild(activeTd);
 
@@ -5015,8 +4945,8 @@ function renderEPTable(type, highlightId, filterId, sortState, theadId, tbodyId)
     hlTd.style.cursor = 'pointer';
     hlTd.title        = `View ${formatEPKey(key)} combinations for ${hlName}`;
     hlTd.innerHTML    = hlShortfall > 0
-      ? `<span class="days-badge days-badge--stale" style="min-width:28px;text-align:center;">${hlShortfall}</span>`
-      : `<span class="has-it-badge has-it-badge--yes"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span></span>`;
+      ? `<span class="badge badge--red">${hlShortfall}</span>`
+      : `<span class="badge badge--green"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span></span>`;
     hlTd.addEventListener('click', e => {
       e.stopPropagation();
       openEggPotionDebugModal(key, type, highlight);
@@ -5109,15 +5039,15 @@ function openEggPotionDebugModal(key, type, username) {
       const haveTd = document.createElement('td');
       haveTd.className = 'has-it-cell stat-cell';
       haveTd.innerHTML = r.hasIt
-        ? `<span class="has-it-badge has-it-badge--yes"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span></span>`
-        : `<span class="has-it-badge has-it-badge--no"><span class="material-symbols-outlined icon--sm" aria-hidden="true">remove</span></span>`;
+        ? `<span class="badge badge--green"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span></span>`
+        : `<span class="badge badge--muted"><span class="material-symbols-outlined icon--sm" aria-hidden="true">remove</span></span>`;
       tr.appendChild(haveTd);
 
       const mountTd = document.createElement('td');
       mountTd.className = 'has-it-cell stat-cell';
       mountTd.innerHTML = r.hasMount
-        ? `<span class="has-it-badge has-it-badge--yes"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span></span>`
-        : `<span class="has-it-badge has-it-badge--no"><span class="material-symbols-outlined icon--sm" aria-hidden="true">remove</span></span>`;
+        ? `<span class="badge badge--green"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span></span>`
+        : `<span class="badge badge--muted"><span class="material-symbols-outlined icon--sm" aria-hidden="true">remove</span></span>`;
       tr.appendChild(mountTd);
 
       const eggTd = document.createElement('td');
@@ -5227,7 +5157,7 @@ function openEggPotionModal(key, type) {
     tbody.innerHTML = '';
 
     if (!members.length) {
-      tbody.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:20px;color:var(--color-text-muted);">No data available.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="${colCount}" class="table-empty-cell">No data available.</td></tr>`;
       return;
     }
 
@@ -5301,11 +5231,11 @@ function classifyPet(key) {
     const parts  = key.split('-');
     const animal = parts[0];
     const color  = parts.length > 1 ? parts.slice(1).join('-') : '—';
-    return { label: 'Special (keyed)', cssClass: 'class-badge--special', animal, color };
+    return { label: 'Special (keyed)', cssClass: 'badge--red', animal, color };
   }
 
   if (!key.includes('-')) {
-    return { label: 'Unknown', cssClass: 'class-badge--unknown', animal: key, color: '—' };
+    return { label: 'Unknown', cssClass: 'badge--orange', animal: key, color: '—' };
   }
 
   const [animal, color] = key.split('-');
@@ -5315,12 +5245,12 @@ function classifyPet(key) {
   const isQuestPotion    = questPotionColors.has(color);
   const isSeasonalPotion = seasonalPotionColors.has(color);
 
-  if (isBasicAnimal && isBasicPotion)    return { label: 'Standard × Standard',         cssClass: 'class-badge--bb',  animal, color };
-  if (isBasicAnimal && isQuestPotion)    return { label: 'Standard × Quest Potion',      cssClass: 'class-badge--bq',  animal, color };
-  if (isBasicAnimal && isSeasonalPotion) return { label: 'Standard × Seasonal Potion',   cssClass: 'class-badge--bs',  animal, color };
-  if (isQuestAnimal && isBasicPotion)    return { label: 'Quest Pet × Standard',          cssClass: 'class-badge--qb',  animal, color };
+  if (isBasicAnimal && isBasicPotion)    return { label: 'Standard × Standard',         cssClass: 'badge--green',  animal, color };
+  if (isBasicAnimal && isQuestPotion)    return { label: 'Standard × Quest Potion',      cssClass: 'badge--brand',  animal, color };
+  if (isBasicAnimal && isSeasonalPotion) return { label: 'Standard × Seasonal Potion',   cssClass: 'badge--yellow',  animal, color };
+  if (isQuestAnimal && isBasicPotion)    return { label: 'Quest Pet × Standard',          cssClass: 'badge--blue',  animal, color };
 
-  return { label: 'Unknown', cssClass: 'class-badge--unknown', animal, color };
+  return { label: 'Unknown', cssClass: 'badge--orange', animal, color };
 }
 
 /** Render the full pet classification debug table, split by group. */
@@ -5411,12 +5341,12 @@ function renderDebugTable() {
     return arr;
   };
   const groups = [
-    { label: 'Standard × Standard',         cssClass: 'class-badge--bb',      rows: sortRows([...bbRows]), expected: BASIC_ANIMALS.size * BASIC_POTIONS.size        },
-    { label: 'Standard × Quest Potion',      cssClass: 'class-badge--bq',      rows: sortRows([...bqRows]), expected: BASIC_ANIMALS.size * questPotionColors.size    },
-    { label: 'Standard × Seasonal Potion',   cssClass: 'class-badge--bs',      rows: sortRows([...bsRows]), expected: BASIC_ANIMALS.size * seasonalPotionColors.size },
-    { label: 'Quest Pet × Standard',         cssClass: 'class-badge--qb',      rows: sortRows([...qbRows]), expected: questAnimals.size  * BASIC_POTIONS.size        },
-    { label: 'Special (keyed)',              cssClass: 'class-badge--special',  rows: sortRows([...spRows]), expected: SPECIAL_PETS.size                              },
-    { label: 'Unknown',                      cssClass: 'class-badge--unknown',  rows: sortRows([...ukRows]), expected: null                                           },
+    { label: 'Standard × Standard',         cssClass: 'badge--green',      rows: sortRows([...bbRows]), expected: BASIC_ANIMALS.size * BASIC_POTIONS.size        },
+    { label: 'Standard × Quest Potion',      cssClass: 'badge--brand',      rows: sortRows([...bqRows]), expected: BASIC_ANIMALS.size * questPotionColors.size    },
+    { label: 'Standard × Seasonal Potion',   cssClass: 'badge--yellow',      rows: sortRows([...bsRows]), expected: BASIC_ANIMALS.size * seasonalPotionColors.size },
+    { label: 'Quest Pet × Standard',         cssClass: 'badge--blue',      rows: sortRows([...qbRows]), expected: questAnimals.size  * BASIC_POTIONS.size        },
+    { label: 'Special (keyed)',              cssClass: 'badge--red',  rows: sortRows([...spRows]), expected: SPECIAL_PETS.size                              },
+    { label: 'Unknown',                      cssClass: 'badge--orange',  rows: sortRows([...ukRows]), expected: null                                           },
   ];
 
   const classFilterToLabel = {
@@ -5456,7 +5386,7 @@ function renderDebugTable() {
     } else {
       expectedHtml = `<span class="debug-group-meta">${rows.length} observed</span>`;
     }
-    headerTd.innerHTML = `<span class="class-badge ${cssClass}">${esc(label)}</span>${expectedHtml}`;
+    headerTd.innerHTML = `<span class="badge ${cssClass}">${esc(label)}</span>${expectedHtml}`;
     headerTr.appendChild(headerTd);
     container.appendChild(headerTr);
 
@@ -5559,7 +5489,6 @@ const POTION_TO_SCROLL = Object.fromEntries(Object.entries(SCROLL_TO_POTION).map
 function buildQuestRecommendations() {
   if (!lastEggPotionData || !lastScrollData || !lastFile) return null;
 
-  const QUEST_COPIES = 3; // scrolls always give 3 eggs or 3 potions
 
   function scrollHolders(scrollKey) {
     const entry = lastScrollData[scrollKey];
@@ -5644,7 +5573,7 @@ function renderQuestRecommendations() {
   const allRecs   = buildQuestRecommendations();
 
   if (!allRecs) {
-    container.innerHTML = `<p class="rec-empty" style="padding:16px 0;">Generate the table first to see recommendations.</p>`;
+    container.innerHTML = `<p class="rec-empty rec-empty--row">Generate the table first to see recommendations.</p>`;
     return;
   }
 
@@ -5708,8 +5637,8 @@ function renderQuestRecommendations() {
       const key         = item[nameKey];
 
       const availBadge = holders.length > 0
-        ? `<span class="rec-available-badge"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span>${holders.length} scroll holder${holders.length !== 1 ? 's' : ''}</span>`
-        : `<span class="rec-available-badge rec-available-badge--none"><span class="material-symbols-outlined icon--sm" aria-hidden="true">block</span>No scroll holders</span>`;
+        ? `<span class="badge badge--green"><span class="material-symbols-outlined icon--sm icon--filled" aria-hidden="true">check</span>${holders.length} scroll holder${holders.length !== 1 ? 's' : ''}</span>`
+        : `<span class="badge badge--red"><span class="material-symbols-outlined icon--sm" aria-hidden="true">block</span>No scroll holders</span>`;
 
       return `<button class="rec-item" data-rectype="${modalType}" data-reckey="${esc(key)}">
         <span class="rec-item__left">
@@ -5813,18 +5742,18 @@ function buildQuestLog(username) {
   if (row) {
     const pct       = row.eligibleTotal > 0
       ? Math.round((row.completedTotal / row.eligibleTotal) * 100) : -1;
-    const attendCls = pct > 66 ? 'attendance-badge--high' : pct > 33 ? 'attendance-badge--mid' : 'attendance-badge--low';
+    const attendCls = pct > 66 ? 'badge--green' : pct > 33 ? 'badge--yellow' : 'badge--red';
 
     const daysSince = row.daysSinceLastQuest;
-    const daysCls   = daysSince === null ? 'days-badge--unknown'
-      : daysSince < 7 ? 'days-badge--recent' : daysSince < 14 ? 'days-badge--medium' : 'days-badge--stale';
+    const daysCls   = daysSince === null ? 'badge--muted'
+      : daysSince < 7 ? 'badge--green' : daysSince < 14 ? 'badge--yellow' : 'badge--red';
     const daysLabel = daysSince === null ? '—' : `${daysSince}d`;
 
     const loginMs  = row.lastLogin;
     const refTs    = lastFile?.timestamp ?? new Date();
-    const loginAge = loginMs ? Math.round((refTs - loginMs) / (1000 * 60 * 60 * 24)) : null;
-    const loginCls = loginAge === null ? 'days-badge--unknown'
-      : loginAge < 7 ? 'days-badge--recent' : loginAge < 14 ? 'days-badge--medium' : 'days-badge--stale';
+    const loginAge = loginMs ? Math.round((refTs - loginMs) / MS_PER_DAY) : null;
+    const loginCls = loginAge === null ? 'badge--muted'
+      : loginAge < 7 ? 'badge--green' : loginAge < 14 ? 'badge--yellow' : 'badge--red';
     const loginLabel = loginAge === null ? '—' : `${loginAge}d`;
 
     const joinLabel = row.joinDate
@@ -5833,12 +5762,12 @@ function buildQuestLog(username) {
 
     summaryHtml = `
       <div class="modal__summary-strip">
-        <span class="stat-label">Est. join <strong style="color:var(--color-text)">${esc(joinLabel)}</strong></span>
-        <span class="stat-label">Completed <strong style="color:var(--color-text)">${row.completedTotal} <span style="font-weight:400;color:var(--color-text-ghost);">of ${row.eligibleTotal}</span></strong></span>
-        <span class="stat-label">Skipped <strong style="${row.skippedTotal > 0 ? 'color:var(--color-danger)' : 'color:var(--color-text-ghost)'}">${row.skippedTotal}</strong></span>
-        ${pct >= 0 ? `<span class="stat-label">Attendance <span class="attendance-badge ${attendCls}">${pct}%</span></span>` : ''}
-        <span class="stat-label">Last quest <span class="days-badge ${daysCls}">${daysLabel}</span></span>
-        <span class="stat-label">Last login <span class="days-badge ${loginCls}">${loginLabel}</span></span>
+        <span class="stat-label">Est. join <strong class="val--text">${esc(joinLabel)}</strong></span>
+        <span class="stat-label">Completed <strong class="val--text">${row.completedTotal} <span class="val--zero">of ${row.eligibleTotal}</span></strong></span>
+        <span class="stat-label">Skipped <strong class="${row.skippedTotal > 0 ? 'val--danger' : 'val--zero'}">${row.skippedTotal}</strong></span>
+        ${pct >= 0 ? `<span class="stat-label">Attendance <span class="badge ${attendCls}">${pct}%</span></span>` : ''}
+        <span class="stat-label">Last quest <span class="badge ${daysCls}">${daysLabel}</span></span>
+        <span class="stat-label">Last login <span class="badge ${loginCls}">${loginLabel}</span></span>
       </div>`;
   }
 
@@ -6008,7 +5937,7 @@ function buildCharacterPanel(member) {
   const blurbHtml = blurb
     ? `<div class="char-section">
         <div class="char-section__label">About</div>
-        <p style="font-size:var(--fs-sub);color:var(--color-text-sub);line-height:1.65;white-space:pre-wrap;">${esc(blurb)}</p>
+        <p class="member-bio">${esc(blurb)}</p>
       </div>`
     : '';
 
@@ -6080,7 +6009,7 @@ function buildInventoryPanel(member) {
     </div>
     <div class="char-section">
       <div class="char-section__label">Gear</div>
-      <div style="display:flex;flex-direction:column;">
+      <div class="gear-list">
         ${[
           { slot: 'weapon',        label: 'Weapon'   },
           { slot: 'armor',         label: 'Armor'    },
@@ -6093,9 +6022,9 @@ function buildInventoryPanel(member) {
         ].map(({ slot, label }) => {
           const key  = (member.items?.gear?.equipped || {})[slot] || '';
           const name = key ? parseItemName(key) : '—';
-          return `<div style="display:flex;gap:10px;font-size:var(--fs-sub);padding:5px 0;border-bottom:1px solid var(--color-border);">
-            <span style="width:66px;flex-shrink:0;color:var(--color-text-muted);font-family:var(--font-condensed);font-size:var(--fs-label);font-weight:700;text-transform:uppercase;letter-spacing:0.07em;padding-top:1px;">${esc(label)}</span>
-            <span style="color:${name === '—' ? 'var(--color-text-ghost)' : 'var(--color-text)'};">${esc(name)}</span>
+          return `<div class="gear-row">
+            <span class="gear-row__label">${esc(label)}</span>
+            <span class="${name === '—' ? 'gear-row__value--empty' : 'gear-row__value'}">${esc(name)}</span>
           </div>`;
         }).join('')}
       </div>
@@ -6112,7 +6041,7 @@ function buildInventoryPanel(member) {
  */
 function buildQuestEggPotionPanel(member, type) {
   if (!lastEggPotionData) {
-    return `<p style="color:var(--color-text-muted);font-size:var(--fs-sub);">No egg/potion data available — generate the table first.</p>`;
+    return `<p class="rec-empty">No egg/potion data available — generate the table first.</p>`;
   }
 
   const username  = member?.auth?.local?.username;
@@ -6180,7 +6109,7 @@ function openMemberModal(username) {
   $('modal-member-name').innerHTML =
     `<span class="modal__class-dot" style="background:${color}" aria-hidden="true"></span>` +
     esc(row.displayName) +
-    (row.isFormer ? `<span class="member-badge" aria-label="former member">former</span>` : '');
+    (row.isFormer ? `<span class="badge badge--red" aria-label="former member">former</span>` : '');
 
   $('modal-member-meta').textContent =
     `@${username}  ·  Lv. ${lvl} ${CLASS_LABEL[cls] || cls}`;
@@ -6479,7 +6408,7 @@ function renderCombatTable() {
   const { rows, msgCount, filesUsed, totalFiles } = lastCombatData;
 
   if (!rows.length) {
-    panel.innerHTML = `<p class="info-bar">No boss or spell activity found in chat history across the loaded snapshots.</p>`;
+    panel.innerHTML = `<p class="banner banner--brand">No boss or spell activity found in chat history across the loaded snapshots.</p>`;
     return;
   }
 
@@ -6599,7 +6528,7 @@ function renderCombatTable() {
     ? ` (${filesUsed} of ${totalFiles} snapshots processed — intermediate files skipped where their chat window was already covered)`
     : '';
   const infoBar = document.createElement('div');
-  infoBar.className = 'info-bar';
+  infoBar.className = 'banner banner--brand';
   infoBar.innerHTML = `<strong>${msgCount.toLocaleString()}</strong> unique chat messages analysed${coverageNote}. Coverage is limited to what was captured in each snapshot's 400-message chat window — events that fell outside every window cannot be recovered.`;
 
   panel.innerHTML = '';
@@ -6902,10 +6831,6 @@ function expandSnapshotsCard() {
   $('former-toggle').addEventListener('change', () => {
     if (lastRows && lastQuests) renderAnalyzeTable(lastRows, lastQuests);
   });
-  $('current-quest-toggle').addEventListener('change', () => {
-    // Re-run full generate() since this toggle affects eligibility computation
-    if (uploadedFiles.filter(f => !f.error && f.members).length >= 2) generate();
-  });
   $('reset-btn').addEventListener('click', () => {
     uploadedFiles = [];
     hasGenerated  = false;
@@ -6959,8 +6884,9 @@ function expandSnapshotsCard() {
   $('att-participation-threshold').addEventListener('input', () => { renderAttendanceTable(); updateSaveButtonState(); });
   $('att-login-threshold').addEventListener('input',         () => { renderAttendanceTable(); updateSaveButtonState(); });
   $('att-save-changes').addEventListener('click', () => {
-    attendancePct   = Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0));
-    attendanceHours = Math.max(1, parseInt($('att-login-threshold').value, 10) || 24);
+    const { pct, hours } = readAttendanceInputs();
+    attendancePct   = pct;
+    attendanceHours = hours;
     renderQuestBanner();
     updateSaveButtonState();
   });
