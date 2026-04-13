@@ -34,7 +34,18 @@
 
   /* Semantic — danger */
   --color-danger:       #f74e52;
+  --color-danger-text:  #b91c1e;   /* 5.28:1 on white — text use */
   --color-danger-light: #fff0f0;
+
+  /* Semantic — warning */
+  --color-warning:      #e8890c;   /* decorative fills / borders only */
+  --color-warning-text: #7a4200;   /* 6.01:1 on white — text use */
+  --color-warning-light:#fff8ed;
+
+  /* Semantic — info */
+  --color-info:         #2388c8;   /* decorative fills / borders only */
+  --color-info-text:    #0d5a8f;   /* 5.89:1 on white — text use */
+  --color-info-light:   #edf5fc;
 
   /* Text hierarchy (all meet WCAG AA on white / surface-alt) */
   --color-text:         #34313a;   /* 12.75:1 */
@@ -1594,6 +1605,19 @@ body {
   font-size: var(--fs-body);
 }
 
+#attendance-modal .data-table tbody td {
+  padding: 11px 18px;
+  vertical-align: middle;
+  font-size: var(--fs-body);
+}
+
+.ep-modal-filter-bar {
+  padding: 8px 20px;
+  background: var(--color-surface-alt);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
 
 /* ── Debug classification badges ── */
 .class-badge {
@@ -1753,6 +1777,59 @@ body {
   color: var(--color-danger);
 }
 
+
+/* ── Quest Status Banner ── */
+.quest-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid;
+  margin-bottom: 16px;
+  font-size: var(--fs-body);
+  line-height: 1.4;
+}
+.quest-banner--none    { background: var(--color-danger-light);  border-color: rgba(247,78,82,0.2);  border-left-color: var(--color-danger);  color: var(--color-danger-text); }
+.quest-banner--pending { background: var(--color-warning-light); border-color: rgba(232,137,12,0.2); border-left-color: var(--color-warning); color: var(--color-warning-text); }
+.quest-banner--ready   { background: var(--color-success-light); border-color: rgba(36,204,143,0.2); border-left-color: var(--color-success); color: var(--color-success-text); }
+.quest-banner--active  { background: var(--color-info-light);    border-color: rgba(35,136,200,0.2); border-left-color: var(--color-info);    color: var(--color-info-text); }
+.quest-banner__link {
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  white-space: nowrap;
+}
+.quest-banner__link:hover { opacity: 0.75; }
+
+/* ── Attendance Modal ── */
+.attendance-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+}
+.attendance-filter-row .field-input--inline { width: 72px; }
+.attendance-unit { font-size: var(--fs-sub); color: var(--color-text-sub); margin-right: 4px; }
+.attendance-actions { display: flex; gap: 8px; }
+.attendance-note {
+  width: 100%;
+  font-size: var(--fs-sub);
+  color: var(--color-text-muted);
+  padding-top: 4px;
+}
+.att-row--inactive { opacity: 0.45; }
+.att-accepted-yes { color: var(--color-success-text); font-weight: 600; }
+.att-accepted-no  { color: var(--color-danger-text); }
+#attendance-modal .att-col-member { min-width: 140px; }
 
 /* ============================================================
    10. UTILITY — VALUE DISPLAY
@@ -2286,8 +2363,8 @@ body {
 
     <!-- Result view tabs (hidden until generate() runs) -->
     <div class="is-hidden" id="result-tabs">
-      <button class="result-tab is-active" id="result-tab-participation">Participation</button>
-      <button class="result-tab"           id="result-tab-quests">Quest Recommendations</button>
+      <button class="result-tab"           id="result-tab-participation">Participation</button>
+      <button class="result-tab is-active" id="result-tab-quests">Quest Recommendations</button>
       <button class="result-tab"           id="result-tab-scrolls">Scrolls</button>
       <button class="result-tab"           id="result-tab-eggs">Quest Eggs</button>
       <button class="result-tab"           id="result-tab-potions">Quest Potions</button>
@@ -2296,7 +2373,7 @@ body {
     </div>
 
     <!-- Panel: Participation -->
-    <div id="result-panel-participation">
+    <div class="is-hidden" id="result-panel-participation">
       <div class="table-controls is-hidden" id="table-controls">
         <label class="toggle-label" for="quest-cols-toggle">
           <span class="toggle-switch">
@@ -2343,7 +2420,8 @@ body {
     </div>
 
     <!-- Panel: Quest Recommendations -->
-    <div class="is-hidden" id="result-panel-quests">
+    <div id="result-panel-quests">
+      <div class="is-hidden quest-banner" id="quest-banner" role="status" aria-live="polite"></div>
       <div class="filter-row filter-row--panel" style="align-items:center;">
         <label class="field-label">Ranking Mode</label>
         <div class="segmented-control">
@@ -2506,6 +2584,18 @@ body {
     </div>
 
     <div class="card">
+      <h2 class="card__label">Quest Status Banner</h2>
+      <p class="welcome-body">The Quest Recommendations tab opens with a banner summarising the current quest state drawn from the most recent snapshot.</p>
+      <ul class="tip-list" style="margin-top:10px;">
+        <li><strong>No quest selected</strong> (red) — no quest key is present in the snapshot. Use the recommendations below to choose one.</li>
+        <li><strong>Pending</strong> (orange or green) — a quest has been invited but not yet started. The banner shows how many active members have accepted. Orange means at least one active member has not yet responded; green means all active members have accepted and the quest can be started without leaving anyone behind.</li>
+        <li><strong>Active</strong> (blue) — the quest is already running. The banner prompts you to plan ahead for the next one.</li>
+      </ul>
+      <p class="welcome-body" style="margin-top:10px;"><strong>"Active member"</strong> is defined as a member who meets two thresholds simultaneously: a minimum participation rate (completed quests ÷ eligible quests) and a maximum time since last login. The defaults are 34% participation and 24 hours. Both thresholds can be adjusted in the <strong>View details</strong> modal that appears on the pending banner. Changes only affect the banner count after clicking <strong>Save changes</strong>; adjusting the inputs without saving updates the modal table live but leaves the banner unchanged.</p>
+      <p class="welcome-body" style="margin-top:10px;">Participation rate requires two or more snapshots to compute. In single-snapshot mode the participation threshold is ignored and only login recency is applied.</p>
+    </div>
+
+    <div class="card">
       <h2 class="card__label">Limitations</h2>
       <ul class="tip-list">
         <li>Quest completion counts are cumulative totals. If a member's count decreases between snapshots (account reset or data anomaly), the delta is clamped to zero and treated as no activity.</li>
@@ -2572,6 +2662,16 @@ body {
       </div>
       <button class="modal__close" id="scroll-modal-close" aria-label="Close">✕</button>
     </div>
+    <div class="is-hidden ep-modal-filter-bar" id="ep-modal-filter-bar">
+      <label class="toggle-label" for="ep-scroll-holders-only">
+        <span class="toggle-switch">
+          <input type="checkbox" id="ep-scroll-holders-only" role="switch" checked>
+          <span class="toggle-switch__track"></span>
+          <span class="toggle-switch__thumb"></span>
+        </span>
+        Scroll owned
+      </label>
+    </div>
     <div class="modal__body modal__body--scroll-table">
       <div class="data-table-wrap">
         <table class="data-table" id="scroll-modal-table">
@@ -2606,6 +2706,39 @@ body {
       <div class="modal__panel is-active" id="combat-modal-panel-summary"></div>
       <div class="modal__panel"           id="combat-modal-panel-chat"></div>
     </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ATTENDANCE MODAL
+     ============================================================ -->
+<div class="modal-overlay is-hidden" id="attendance-modal" role="dialog" aria-modal="true" aria-labelledby="attendance-modal-title">
+  <div class="modal">
+
+    <div class="modal__header">
+      <div class="modal__identity">
+        <div class="modal__name" id="attendance-modal-title">Quest Attendance</div>
+        <div class="modal__meta" id="attendance-modal-meta"></div>
+      </div>
+      <button class="modal__close" id="attendance-modal-close" aria-label="Close">✕</button>
+    </div>
+
+    <div class="attendance-filter-row">
+      <label class="field-label" for="att-participation-threshold">Min. participation</label>
+      <input class="field-input field-input--inline" type="number" id="att-participation-threshold" min="0" max="100" value="34">
+      <span class="attendance-unit">%</span>
+      <label class="field-label" for="att-login-threshold">Logged in within</label>
+      <input class="field-input field-input--inline" type="number" id="att-login-threshold" min="1" value="24">
+      <span class="attendance-unit">hours</span>
+      <div class="attendance-actions">
+        <button class="btn btn--primary btn--sm"   id="att-save-changes" disabled>Save changes</button>
+        <button class="btn btn--secondary btn--sm" id="att-restore-defaults">Restore defaults</button>
+      </div>
+      <span class="attendance-note" id="att-participation-note"></span>
+    </div>
+
+    <div class="modal__body modal__body--scroll-table" id="attendance-modal-body"></div>
 
   </div>
 </div>
@@ -3216,6 +3349,9 @@ let recMode = 'shortfall';     // 'shortfall' | 'coverage' | 'yield'
 let recActiveOnly = false;     // when true, hide rows with no scroll holders
 let recFilterUser = '';        // username to filter by scroll ownership; '' = no filter
 
+let attendancePct   = 34;     // saved participation threshold for quest banner / attendance modal
+let attendanceHours = 24;     // saved login-recency threshold (hours)
+
 /* 5b. File handling ----------------------------------------- */
 
 function parseTimestamp(filename) {
@@ -3441,6 +3577,225 @@ function updateQuestStatusUI(partyQuest, questName) {
   }
 }
 
+/* ============================================================
+   Quest Status Banner + Attendance Modal
+   ============================================================ */
+
+/**
+ * Compute X (active members who accepted) and Y (total active members)
+ * for a pending quest, given the current filter thresholds.
+ *
+ * "Active" = logged in within loginHours AND participation rate >= participationPct.
+ * When lastRows is null (single-file mode) the participation filter is skipped.
+ *
+ * @param {number} participationPct  0–100
+ * @param {number} loginHours        positive integer
+ * @returns {{ x: number, y: number, tableRows: Array, nowMs: number }}
+ */
+function computeAttendanceCounts(participationPct, loginHours) {
+  if (!lastFile) return { x: 0, y: 0, tableRows: [], nowMs: Date.now() };
+
+  const pq      = lastFile.partyQuest;
+  const nowMs   = lastFile.timestamp ? +lastFile.timestamp : Date.now();
+  const hasRows = Array.isArray(lastRows) && lastRows.length > 0;
+
+  // Build a participation-rate lookup keyed by userId
+  const rateByUserId = {};
+  if (hasRows) {
+    for (const row of lastRows) {
+      if (row.isFormer) continue;
+      const memberRecord = lastFile.memberMap?.[row.username];
+      const uid = memberRecord?._id || memberRecord?.id;
+      if (!uid) continue;
+      const rate = row.eligibleTotal > 0
+        ? Math.round((row.completedTotal / row.eligibleTotal) * 100)
+        : 0;
+      rateByUserId[uid] = rate;
+    }
+  }
+
+  const loginMs = loginHours * 60 * 60 * 1000;
+  const tableRows = [];
+  let x = 0, y = 0;
+
+  for (const m of lastFile.members) {
+    const uid       = m._id || m.id;
+    const username  = m.auth?.local?.username;
+    const name      = m.profile?.name || username || uid;
+    const loginRaw  = m.auth?.timestamps?.loggedin ?? null;
+    const lastLogin = loginRaw ? new Date(loginRaw) : null;
+    const loginAgeMs = lastLogin ? nowMs - +lastLogin : Infinity;
+
+    const passesLogin = loginAgeMs <= loginMs;
+
+    const rate = uid in rateByUserId ? rateByUserId[uid] : null;
+    // null rate (no row data) → skip participation filter
+    const passesParticipation = rate === null || rate >= participationPct;
+
+    const isActive = passesLogin && passesParticipation;
+    const accepted = pq?.members?.[uid] === true;
+
+    if (isActive) {
+      y++;
+      if (accepted) x++;
+    }
+
+    tableRows.push({ uid, name, username, accepted, rate, lastLogin, loginAgeMs, isActive,
+                     displayName: name, isFormer: false });
+  }
+
+  // Sort: active first, then alphabetical
+  tableRows.sort((a, b) => {
+    if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  return { x, y, tableRows, nowMs };
+}
+
+/** Render (or re-render) the attendance table inside the modal. */
+function renderAttendanceTable() {
+  const participationPct = Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0));
+  const loginHours       = Math.max(1, parseInt($('att-login-threshold').value, 10) || 24);
+  const hasRows          = Array.isArray(lastRows) && lastRows.length > 0;
+
+  const { x, y, tableRows, nowMs } = computeAttendanceCounts(participationPct, loginHours);
+
+  // Update modal meta line
+  $('attendance-modal-meta').textContent = `${x} of ${y} active members have accepted`;
+
+  // Show participation-unavailable note when in single-file mode
+  const noteEl = $('att-participation-note');
+  const thresholdInput = $('att-participation-threshold');
+  if (!hasRows) {
+    noteEl.textContent      = 'Participation data requires 2+ snapshots — only login recency is applied.';
+    thresholdInput.disabled = true;
+  } else {
+    noteEl.textContent      = '';
+    thresholdInput.disabled = false;
+  }
+
+  const body  = $('attendance-modal-body');
+
+  if (!tableRows.length) {
+    body.innerHTML = `<p class="rec-empty" style="padding:20px;">No members found.</p>`;
+    return;
+  }
+
+  const table = document.createElement('table');
+  table.className = 'data-table';
+  table.innerHTML = `
+    <thead>
+      <tr>
+        <th class="att-col-member">Member</th>
+        <th class="stat-cell">Accepted</th>
+        <th class="stat-cell">Participation</th>
+        <th class="stat-cell">Last Login</th>
+      </tr>
+    </thead>`;
+
+  const tbody = document.createElement('tbody');
+
+  for (const r of tableRows) {
+    const tr = document.createElement('tr');
+    if (!r.isActive) tr.classList.add('att-row--inactive');
+
+    // Member name — opens member detail modal
+    tr.appendChild(makeNameTd(r, closeAttendanceModal));
+
+    // Accepted
+    const accTd = document.createElement('td');
+    accTd.className = 'stat-cell';
+    if (r.accepted) {
+      accTd.innerHTML = `<span class="att-accepted-yes">✓ Yes</span>`;
+    } else {
+      accTd.innerHTML = `<span class="att-accepted-no">✗ No</span>`;
+    }
+    tr.appendChild(accTd);
+
+    // Participation
+    tr.appendChild(makeAttendTd(r.rate));
+
+    // Last login
+    tr.appendChild(makeLoginTd(r.lastLogin, nowMs));
+
+    tbody.appendChild(tr);
+  }
+
+  table.appendChild(tbody);
+  const wrap = document.createElement('div');
+  wrap.className = 'data-table-wrap';
+  wrap.appendChild(table);
+  body.innerHTML = '';
+  body.appendChild(wrap);
+}
+
+/** Enable Save only when inputs differ from the last saved state. */
+function updateSaveButtonState() {
+  const pct   = Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0));
+  const hours = Math.max(1, parseInt($('att-login-threshold').value, 10) || 24);
+  $('att-save-changes').disabled = (pct === attendancePct && hours === attendanceHours);
+}
+
+/** Open the quest attendance modal and render the table. */
+function openAttendanceModal() {
+  $('att-participation-threshold').value = attendancePct;
+  $('att-login-threshold').value         = attendanceHours;
+  show($('attendance-modal'));
+  document.body.style.overflow = 'hidden';
+  renderAttendanceTable();
+  updateSaveButtonState();
+  $('attendance-modal-close').focus();
+}
+
+/** Close the quest attendance modal. */
+function closeAttendanceModal() {
+  hide($('attendance-modal'));
+  document.body.style.overflow = '';
+}
+
+/**
+ * Render the quest status banner at the top of the Recommendations panel.
+ * Called from renderQuestRecommendations() after generate() has run.
+ */
+function renderQuestBanner() {
+  const el = $('quest-banner');
+  if (!lastFile) { hide(el); return; }
+
+  const pq = lastFile.partyQuest;
+
+  // No quest selected
+  if (!pq?.key) {
+    el.className = 'quest-banner quest-banner--none';
+    el.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">info</span>
+      No quest selected. Check below for recommendations.`;
+    show(el);
+    return;
+  }
+
+  // Quest already active (started)
+  if (pq.active) {
+    const name = lastFile.questName || pq.key;
+    el.className = 'quest-banner quest-banner--active';
+    el.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">swords</span>
+      <span><strong>${esc(name)}</strong> is already active. Consider planning ahead for the next quest.</span>`;
+    show(el);
+    return;
+  }
+
+  // Quest pending — compute X/Y with saved thresholds for banner text
+  const { x, y } = computeAttendanceCounts(attendancePct, attendanceHours);
+  const name = lastFile.questName || pq.key;
+  const allAccepted = y > 0 && x === y;
+  el.className = `quest-banner ${allAccepted ? 'quest-banner--ready' : 'quest-banner--pending'}`;
+  el.innerHTML = `<span class="material-symbols-outlined icon--sm" aria-hidden="true">schedule</span>
+    <span><strong>${esc(name)}</strong> is pending. ${x} of ${y} active members have accepted the invitation.
+    <button class="quest-banner__link" id="quest-banner-view-details">View details</button></span>`;
+  show(el);
+
+  $('quest-banner-view-details').addEventListener('click', openAttendanceModal);
+}
+
 /** Main analysis entry point — runs the full diff pipeline across all uploaded snapshots. */
 function generate() {
   hasGenerated = true;
@@ -3486,11 +3841,11 @@ function generate() {
     buildCombatData();
     renderCombatTable();
 
-    // Disable participation tab, default to Scrolls
+    // Disable participation tab, default to Quest Recommendations
     $('result-tab-participation').disabled = true;
     $('result-tab-participation').title    = 'Requires 2 or more snapshots';
     show($('result-tabs'));
-    switchResultTab('scrolls');
+    switchResultTab('quests');
 
     const metaEl = $('result-meta');
     show(metaEl);
@@ -3760,9 +4115,9 @@ function generate() {
   buildCombatData();
   renderCombatTable();
 
-  // Show tab strip, default to Participation tab
+  // Show tab strip, default to Quest Recommendations
   show($('result-tabs'));
-  switchResultTab('participation');
+  switchResultTab('quests');
 
   statusEl.textContent = 'Table generated.';
   statusEl.className   = 'status-msg is-ok';
@@ -4229,6 +4584,7 @@ function openScrollModal(questKey) {
   }
 
   render();
+  hide($('ep-modal-filter-bar'));
   show($('scroll-modal'));
   document.body.style.overflow = 'hidden';
   $('scroll-modal-close').focus();
@@ -4779,6 +5135,7 @@ function openEggPotionDebugModal(key, type, username) {
   }
 
   render();
+  hide($('ep-modal-filter-bar'));
   show($('scroll-modal'));
   document.body.style.overflow = 'hidden';
   $('scroll-modal-close').focus();
@@ -4821,6 +5178,11 @@ function openEggPotionModal(key, type) {
   const scrollKey   = type === 'eggs' ? PET_TO_SCROLL[key] : POTION_TO_SCROLL[key];
   const scrollLabel = scrollKey ? camelToWords(scrollKey) : null;
 
+  // Filter state — only meaningful when there is a scroll quest for this item
+  const filterToggle = $('ep-scroll-holders-only');
+  filterToggle.checked = true;
+  let scrollHoldersOnly = true;
+
   $('scroll-modal-title').textContent = `${label} ${typeName}`;
   $('scroll-modal-meta').textContent  =
     `${entry.playersNeed.size} player${entry.playersNeed.size !== 1 ? 's' : ''} need more · total shortfall ${entry.totalShortfall}` +
@@ -4830,7 +5192,15 @@ function openEggPotionModal(key, type) {
   const s = { key: 'shortfall', dir: -1 };
 
   function render() {
-    const members = Object.values(allMemberData);
+    let members = Object.values(allMemberData);
+
+    // Apply scroll-holders filter when active and a scroll quest exists
+    if (scrollKey && scrollHoldersOnly) {
+      members = members.filter(m =>
+        (findLatestMemberRecord(m.username)?.items?.quests?.[scrollKey] ?? 0) > 0
+      );
+    }
+
     if      (s.key === 'shortfall') members.sort((a, b) => s.dir * (b.shortfall - a.shortfall) || a.displayName.localeCompare(b.displayName));
     else if (s.key === 'name')      members.sort((a, b) => s.dir * a.displayName.localeCompare(b.displayName));
     else if (s.key === 'pets')      members.sort((a, b) => s.dir * ((petCountByUsername[b.username] ?? 0)   - (petCountByUsername[a.username] ?? 0)));
@@ -4902,12 +5272,19 @@ function openEggPotionModal(key, type) {
     }
   }
 
+  // Show filter bar only when there is a relevant scroll quest
+  if (scrollKey) {
+    filterToggle.onchange = () => { scrollHoldersOnly = filterToggle.checked; render(); };
+    show($('ep-modal-filter-bar'));
+  } else {
+    hide($('ep-modal-filter-bar'));
+  }
+
   render();
   show($('scroll-modal'));
   document.body.style.overflow = 'hidden';
   $('scroll-modal-close').focus();
 }
-
 
 /* ============================================================
    5j. Pet Classification Debug
@@ -5262,6 +5639,7 @@ function populateRecUserDropdown() {
 
 /** Render the quest recommendations panel with the current mode and filter state. */
 function renderQuestRecommendations() {
+  renderQuestBanner();
   const container = $('quest-rec-body');
   const allRecs   = buildQuestRecommendations();
 
@@ -6553,6 +6931,7 @@ function expandSnapshotsCard() {
     if (e.key === 'Escape' && !$('member-modal').classList.contains('is-hidden')) closeMemberModal();
     if (e.key === 'Escape' && !$('scroll-modal').classList.contains('is-hidden'))  closeScrollModal();
     if (e.key === 'Escape' && !$('combat-modal').classList.contains('is-hidden'))  closeCombatModal();
+    if (e.key === 'Escape' && !$('attendance-modal').classList.contains('is-hidden')) closeAttendanceModal();
   });
   document.querySelectorAll('#member-modal .modal__tab').forEach(btn => {
     btn.addEventListener('click', () => switchModalTab(btn.dataset.modalTab));
@@ -6571,6 +6950,29 @@ function expandSnapshotsCard() {
   });
   $('combat-modal-tab-summary').addEventListener('click', () => switchCombatModalTab('summary'));
   $('combat-modal-tab-chat').addEventListener('click',    () => switchCombatModalTab('chat'));
+
+  // Attendance modal
+  $('attendance-modal-close').addEventListener('click', closeAttendanceModal);
+  $('attendance-modal').addEventListener('click', e => {
+    if (e.target === $('attendance-modal')) closeAttendanceModal();
+  });
+  $('att-participation-threshold').addEventListener('input', () => { renderAttendanceTable(); updateSaveButtonState(); });
+  $('att-login-threshold').addEventListener('input',         () => { renderAttendanceTable(); updateSaveButtonState(); });
+  $('att-save-changes').addEventListener('click', () => {
+    attendancePct   = Math.max(0, Math.min(100, parseInt($('att-participation-threshold').value, 10) || 0));
+    attendanceHours = Math.max(1, parseInt($('att-login-threshold').value, 10) || 24);
+    renderQuestBanner();
+    updateSaveButtonState();
+  });
+  $('att-restore-defaults').addEventListener('click', () => {
+    attendancePct   = 34;
+    attendanceHours = 24;
+    $('att-participation-threshold').value = attendancePct;
+    $('att-login-threshold').value         = attendanceHours;
+    renderAttendanceTable();
+    renderQuestBanner();
+    updateSaveButtonState();
+  });
 
   // Result view tabs
   $('result-tab-participation').addEventListener('click', () => switchResultTab('participation'));
