@@ -3870,6 +3870,18 @@ function generate() {
     }
   }
 
+  // ── Step 3b: Last-seen snapshot index per member ──────────────────────
+  // Tracks the highest file index a member appears in. Used in Step 6 to cap
+  // the eligibility denominator for former members so they are not penalised
+  // for party quests that ran after they left.
+  const memberLastFileIdx = {};
+  for (let i = 0; i < files.length; i++) {
+    for (const m of files[i].members) {
+      const u = m?.auth?.local?.username;
+      if (u) memberLastFileIdx[u] = i;
+    }
+  }
+
   // ── Step 4: Build per-member first/last quest maps ─────────────────────
   const memberFirst   = {};
   const memberLast    = {};
@@ -3955,14 +3967,24 @@ function generate() {
     const firstIdx   = memberFirstFileIdx[username] ?? 0;
     const cumAtFirst = cumulativeEligible[firstIdx];
 
-    // Sum the party completions that occurred from their first snapshot onward,
+    // Cap the eligibility window at the member's last snapshot for former
+    // members, so they are not penalised for party quests that ran after they
+    // left. Current members still run to end-of-data (files.length - 1).
+    const lastIdx       = finalMembers.has(username)
+      ? files.length - 1
+      : (memberLastFileIdx[username] ?? 0);
+    const eligibleAtCap = cumulativeEligible[lastIdx];
+
+    // Sum the party completions that occurred within the member's window,
     // both as a total and broken out per quest key for the "X of Y" display.
     let eligibleTotal = 0;
     const eligibleByQuest = {};
-    for (const q of Object.keys(totalEligibleAtEnd)) {
-      const v = (totalEligibleAtEnd[q] || 0) - (cumAtFirst[q] || 0);
-      eligibleByQuest[q] = v;
-      eligibleTotal += v;
+    for (const q of Object.keys(eligibleAtCap)) {
+      const v = (eligibleAtCap[q] || 0) - (cumAtFirst[q] || 0);
+      if (v > 0) {
+        eligibleByQuest[q] = v;
+        eligibleTotal += v;
+      }
     }
 
     // Inject current quest eligibility for current (non-former) members
